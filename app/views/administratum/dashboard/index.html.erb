@@ -1,0 +1,16 @@
+<%= page_header title: t("administratum.dashboard"), breadcrumbs: [] %>
+
+<div class="adm-container adm-page-body">
+  <% if administratum_config.dashboard %>
+    <%= render administratum_config.dashboard %>
+  <% else %>
+    <div class="adm-grid">
+      <% Administratum.registry.menu_items.each do |resource| %>
+        <%= link_to Administratum::Paths.new(resource, self).index, class: "adm-card adm-tile" do %>
+          <span class="adm-tile-label"><%= resource.menu_label %></span>
+          <span class="adm-tile-value"><%= number_with_delimiter(resource.definition.model.count) %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

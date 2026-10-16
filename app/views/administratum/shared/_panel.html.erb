@@ -1,0 +1,24 @@
+<div class="adm-offcanvas" data-adm-offcanvas="<%= id %>" hidden>
+  <div class="adm-offcanvas-backdrop" data-adm-offcanvas-close></div>
+  <aside class="adm-offcanvas-panel" role="dialog" aria-modal="true" aria-labelledby="<%= id %>-title">
+    <header class="adm-offcanvas-header">
+      <h2 id="<%= id %>-title" class="adm-card-title"><%= title %></h2>
+      <button type="button" class="adm-icon-btn" data-adm-offcanvas-close aria-label="<%= t("administratum.close") %>">&times;</button>
+    </header>
+    <div class="adm-offcanvas-body">
+      <% if button.panel %>
+        <%= render button.panel, resource: record, button: button %>
+      <% else %>
+        <%= form_with url: target, method: :post, multipart: true, class: "adm-form" do |f| %>
+          <div class="adm-field">
+            <%= f.label :file, t("administratum.upload.file"), class: "adm-label" %>
+            <%= f.file_field :file, class: "adm-input", required: true, accept: (button.upload.is_a?(String) ? button.upload : nil) %>
+          </div>
+          <div class="adm-form-footer">
+            <%= f.submit t("administratum.upload.submit"), class: "adm-btn adm-btn-primary" %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </aside>
+</div>

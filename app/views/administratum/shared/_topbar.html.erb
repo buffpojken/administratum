@@ -1,0 +1,29 @@
+<header class="adm-topbar">
+  <div class="adm-container adm-topbar-inner">
+    <button type="button" class="adm-icon-btn md:hidden" data-adm-toggle="adm-nav" aria-controls="adm-nav" aria-expanded="false" aria-label="<%= t("administratum.menu") %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="adm-icon" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <%= link_to administratum.root_path, class: "adm-brand" do %>
+      <% if administratum_config.logo %>
+        <%= image_tag administratum_config.logo, alt: administratum_config.app_name, class: "adm-logo" %>
+      <% else %>
+        <span class="adm-brand-name"><%= administratum_config.app_name %></span>
+      <% end %>
+    <% end %>
+    <div class="adm-topbar-actions">
+      <button type="button" class="adm-icon-btn" data-adm-theme-toggle aria-label="<%= t("administratum.toggle_theme") %>">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="adm-icon" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <% if current_admin %>
+        <div class="adm-dropdown" data-adm-dropdown>
+          <button type="button" class="adm-btn adm-btn-ghost" data-adm-dropdown-toggle aria-haspopup="true" aria-expanded="false">
+            <%= current_admin.email %>
+          </button>
+          <div class="adm-dropdown-menu" data-adm-dropdown-menu hidden>
+            <%= button_to t("administratum.sessions.sign_out"), administratum.sign_out_path, method: :delete, class: "adm-dropdown-item" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</header>

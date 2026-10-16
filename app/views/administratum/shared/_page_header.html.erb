@@ -1,0 +1,17 @@
+<div class="adm-page-header">
+  <div class="adm-container adm-page-header-inner">
+    <div class="adm-page-heading">
+      <% if breadcrumbs.any? %>
+        <ol class="adm-breadcrumb">
+          <% breadcrumbs.each do |label, path| %>
+            <li class="adm-breadcrumb-item"><%= path ? link_to(label, path) : label %></li>
+          <% end %>
+        </ol>
+      <% end %>
+      <h1 class="adm-page-title"><%= title %></h1>
+    </div>
+    <% if actions.present? %>
+      <div class="adm-page-actions"><%= actions %></div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<%= page_header title: resource_class.plural_label do %>
+  <% if filters? %>
+    <button type="button" class="adm-btn adm-btn-secondary" data-adm-offcanvas-open="adm-filters"><%= t("administratum.filters.title") %></button>
+  <% end %>
+  <%= buttons_for(:index, nil) %>
+<% end %>
+
+<div class="adm-container adm-page-body">
+  <%= render "table" %>
+</div>
+
+<% if filters? %>
+  <% content_for :panels do %>
+    <%= render "administratum/shared/filters" %>
+  <% end %>
+<% end %>

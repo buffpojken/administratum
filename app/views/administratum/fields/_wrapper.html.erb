@@ -1,0 +1,11 @@
+<% errors = field_errors(form, field) %>
+<div class="<%= class_names("adm-field adm-field-horizontal", "adm-field-invalid" => errors.any?) %>">
+  <div class="adm-field-label">
+    <%= form.label field.name, class: "adm-label" do %><%= field_label(form, field) %><% if field_required?(form, field) %><span class="adm-required" aria-hidden="true">*</span><% end %><% end %>
+  </div>
+  <div class="adm-field-control">
+    <%= input %>
+    <% if field.hint %><p class="adm-hint" id="<%= form.field_id(field.name, :hint) %>"><%= field.hint %></p><% end %>
+    <% errors.each do |message| %><p class="adm-error"><%= message %></p><% end %>
+  </div>
+</div>

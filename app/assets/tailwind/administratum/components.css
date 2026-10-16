@@ -1,0 +1,193 @@
+/* Administratum components. Every colour comes from a --color-adm-* token. */
+
+@layer base {
+  .adm-body {
+    @apply min-h-screen bg-adm-bg font-adm text-sm text-adm-text antialiased;
+  }
+
+  .adm-scroll-lock {
+    @apply overflow-hidden;
+  }
+}
+
+@layer components {
+  /* Layout ---------------------------------------------------------------- */
+  .adm-container { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+  .adm-main { @apply flex flex-col pb-12; }
+  .adm-page-body { @apply flex flex-col gap-6 pt-6; }
+  .adm-grid { @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-4; }
+  .adm-sr-only { @apply sr-only; }
+  .adm-muted { @apply text-adm-muted; }
+
+  /* Top bar and navigation ------------------------------------------------ */
+  .adm-topbar { @apply border-b border-adm-border bg-adm-surface; }
+  .adm-topbar-inner { @apply flex h-14 items-center gap-3; }
+  .adm-brand { @apply flex items-center gap-2 font-semibold text-adm-text no-underline; }
+  .adm-brand-name { @apply text-base tracking-tight; }
+  .adm-logo { @apply h-7 w-auto; }
+  .adm-topbar-actions { @apply ml-auto flex items-center gap-1; }
+
+  .adm-nav { @apply hidden border-b border-adm-border bg-adm-surface md:block; }
+  .adm-nav.adm-open { @apply block; }
+  .adm-nav-list { @apply -mb-px flex flex-col gap-1 py-2 md:flex-row md:gap-6 md:py-0; }
+  .adm-nav-link {
+    @apply block border-b-2 border-transparent py-3 font-medium text-adm-muted no-underline transition-colors hover:text-adm-text;
+  }
+  .adm-nav-link-active { @apply border-adm-primary text-adm-text; }
+
+  .adm-dropdown { @apply relative; }
+  .adm-dropdown-menu {
+    @apply absolute right-0 z-30 mt-2 min-w-44 overflow-hidden rounded-adm border border-adm-border bg-adm-surface py-1 shadow-lg;
+  }
+  .adm-dropdown-item {
+    @apply block w-full cursor-pointer px-4 py-2 text-left text-adm-text hover:bg-adm-surface-muted;
+  }
+
+  /* Page header ----------------------------------------------------------- */
+  .adm-page-header { @apply border-b border-adm-border bg-adm-surface; }
+  .adm-page-header-inner { @apply flex flex-wrap items-end gap-4 py-5; }
+  .adm-page-heading { @apply min-w-0 flex-1; }
+  .adm-page-title { @apply truncate text-xl font-semibold tracking-tight text-adm-text; }
+  .adm-page-actions { @apply flex flex-wrap items-center gap-2; }
+  .adm-breadcrumb { @apply mb-1 flex flex-wrap items-center gap-1.5 text-xs text-adm-muted; }
+  .adm-breadcrumb-item a { @apply text-adm-muted no-underline hover:text-adm-text; }
+  .adm-breadcrumb-item + .adm-breadcrumb-item::before { content: "/"; @apply mr-1.5 text-adm-border; }
+
+  /* Cards ----------------------------------------------------------------- */
+  .adm-card { @apply overflow-hidden rounded-adm border border-adm-border bg-adm-surface shadow-xs; }
+  .adm-card-header { @apply flex items-center justify-between gap-4 border-b border-adm-border px-5 py-3.5; }
+  .adm-card-title { @apply text-base font-semibold text-adm-text; }
+  .adm-card-body { @apply p-5; }
+  .adm-card-footer { @apply border-t border-adm-border bg-adm-surface-muted px-5 py-3; }
+  .adm-tile { @apply flex flex-col gap-1 p-5 no-underline transition-shadow hover:shadow-md; }
+  .adm-tile-label { @apply text-adm-muted; }
+  .adm-tile-value { @apply text-2xl font-semibold text-adm-text tabular-nums; }
+
+  /* Buttons --------------------------------------------------------------- */
+  .adm-btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-adm border px-3.5 py-2 text-sm font-medium whitespace-nowrap no-underline transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-adm-ring disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .adm-btn-primary { @apply border-adm-primary bg-adm-primary text-adm-primary-fg hover:opacity-90; }
+  .adm-btn-secondary { @apply border-adm-border bg-adm-surface text-adm-text hover:bg-adm-surface-muted; }
+  .adm-btn-danger { @apply border-adm-border bg-adm-surface text-adm-danger hover:border-adm-danger hover:bg-adm-danger hover:text-adm-danger-fg; }
+  .adm-btn-ghost { @apply border-transparent bg-transparent text-adm-text hover:bg-adm-surface-muted; }
+  .adm-btn-sm { @apply px-2.5 py-1 text-xs; }
+  .adm-btn-block { @apply w-full; }
+  .adm-btn-group { @apply flex items-center justify-end gap-1; }
+  .adm-inline-form { @apply inline-flex; }
+  .adm-icon-btn {
+    @apply inline-flex size-9 cursor-pointer items-center justify-center rounded-adm text-lg text-adm-muted hover:bg-adm-surface-muted hover:text-adm-text focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-adm-ring;
+  }
+  .adm-icon { @apply size-5; }
+  .adm-link { @apply font-medium text-adm-primary no-underline hover:underline; }
+
+  /* Tables ---------------------------------------------------------------- */
+  .adm-table-wrap { @apply overflow-x-auto; }
+  .adm-table { @apply w-full border-collapse text-left; }
+  .adm-table th {
+    @apply border-b border-adm-border bg-adm-surface-muted px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-adm-muted uppercase;
+  }
+  .adm-table th a { @apply text-adm-muted no-underline hover:text-adm-text; }
+  .adm-table td { @apply border-b border-adm-border px-4 py-3 align-middle; }
+  .adm-table tbody tr:last-child td { @apply border-b-0; }
+  .adm-table tbody tr:hover td { @apply bg-adm-surface-muted; }
+  .adm-table-actions { @apply w-px whitespace-nowrap text-right; }
+  .adm-table-footer { @apply flex flex-wrap items-center justify-between gap-3; }
+  .adm-empty { @apply py-10 text-center text-adm-muted; }
+
+  .adm-pagy .pagy { @apply flex items-center gap-1; }
+  .adm-pagy .pagy a {
+    @apply rounded-adm px-2.5 py-1 text-adm-text no-underline hover:bg-adm-surface;
+  }
+  .adm-pagy .pagy a.current,
+  .adm-pagy .pagy a[aria-current="page"] { @apply bg-adm-primary text-adm-primary-fg; }
+  .adm-pagy .pagy a:not([href]) { @apply text-adm-muted; }
+
+  /* Attributes (show page) ------------------------------------------------ */
+  .adm-attributes { @apply divide-y divide-adm-border; }
+  .adm-attribute { @apply grid gap-1 px-5 py-3 sm:grid-cols-[12rem_1fr] sm:gap-6; }
+  .adm-attribute dt { @apply font-medium text-adm-muted; }
+  .adm-attribute dd { @apply min-w-0 break-words text-adm-text; }
+
+  /* Forms ----------------------------------------------------------------- */
+  .adm-form { @apply flex flex-col gap-5; }
+  .adm-form-flush { @apply gap-0; }
+  .adm-form .field_with_errors { display: contents; }
+  .adm-form-errors { @apply px-6 pt-6; }
+  .adm-form-body { @apply flex flex-col gap-6 p-6; }
+
+  /* Stacked field: label above control (custom forms, panels, sign in). */
+  .adm-field { @apply flex flex-col gap-2; }
+  /* Horizontal field: label column beside the control, one row per field. */
+  .adm-field-horizontal {
+    @apply gap-2 sm:grid sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:gap-x-8;
+  }
+  .adm-field-label { @apply flex flex-col sm:pt-2.5; }
+  .adm-field-control { @apply flex w-full max-w-3xl min-w-0 flex-col gap-2; }
+  .adm-field-row { @apply flex gap-2; }
+  .adm-label { @apply font-medium text-adm-text; }
+  .adm-required { @apply ml-0.5 text-adm-danger; }
+  .adm-hint { @apply text-xs leading-relaxed text-adm-muted; }
+  .adm-error { @apply text-xs font-medium text-adm-danger; }
+  .adm-input {
+    @apply block min-h-10 w-full rounded-adm border border-adm-border bg-adm-surface px-3.5 py-2 text-sm text-adm-text shadow-xs transition-colors placeholder:text-adm-muted/70 focus:border-adm-primary focus:outline-none focus:ring-3 focus:ring-adm-ring;
+  }
+  textarea.adm-input { @apply min-h-24 leading-relaxed; }
+  select[multiple].adm-input { @apply py-1.5; }
+  /* Safari ignores padding and height on natively styled selects, so draw
+     our own: no native appearance, and a chevron made of two token-coloured
+     gradients (a data-URI SVG would need a hard-coded colour). */
+  select.adm-input:not([multiple]) {
+    @apply appearance-none bg-no-repeat pr-9;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--color-adm-muted) 50%),
+      linear-gradient(135deg, var(--color-adm-muted) 50%, transparent 50%);
+    background-position: calc(100% - 1.125rem) 52%, calc(100% - 0.8125rem) 52%;
+    background-size: 0.3125rem 0.3125rem;
+  }
+  .adm-field-invalid .adm-input { @apply border-adm-danger; }
+  .adm-checkbox { @apply size-4.5 rounded accent-adm-primary; }
+  .adm-field-horizontal .adm-field-control > .adm-checkbox { @apply sm:mt-3; }
+  /* Buttons line up with the control column of horizontal fields. */
+  .adm-form-actions {
+    @apply flex flex-wrap items-center gap-2 border-t border-adm-border bg-adm-surface-muted px-6 py-4 sm:pl-[16.5rem];
+  }
+  .adm-check { @apply flex items-center gap-2 text-adm-text; }
+  .adm-code { @apply font-adm-mono text-xs; }
+  .adm-form-footer { @apply flex flex-wrap items-center gap-2; }
+
+  .adm-alert { @apply rounded-adm border border-adm-danger/40 bg-adm-danger/10 px-4 py-3 text-adm-text; }
+  .adm-alert-title { @apply mb-1 font-semibold text-adm-danger; }
+  .adm-alert ul { @apply list-disc pl-5; }
+
+  .adm-badge { @apply inline-flex items-center rounded-full bg-adm-surface-muted px-2 py-0.5 text-xs font-medium text-adm-muted; }
+  .adm-badge-success { @apply bg-adm-success/15 text-adm-success; }
+
+  /* Offcanvas panels ------------------------------------------------------ */
+  .adm-offcanvas { @apply fixed inset-0 z-40; }
+  .adm-offcanvas-backdrop { @apply absolute inset-0 bg-adm-overlay opacity-0 transition-opacity duration-200; }
+  .adm-offcanvas-panel {
+    @apply absolute inset-y-0 right-0 flex w-full max-w-sm translate-x-full flex-col bg-adm-surface shadow-xl transition-transform duration-200;
+  }
+  .adm-offcanvas-open .adm-offcanvas-backdrop { @apply opacity-100; }
+  .adm-offcanvas-open .adm-offcanvas-panel { @apply translate-x-0; }
+  .adm-offcanvas-header { @apply flex items-center justify-between border-b border-adm-border px-5 py-3.5; }
+  .adm-offcanvas-body { @apply flex-1 overflow-y-auto p-5; }
+
+  /* Flash ----------------------------------------------------------------- */
+  .adm-flash-stack { @apply pointer-events-none fixed inset-x-0 top-4 z-50 flex flex-col items-center gap-2 px-4; }
+  .adm-flash {
+    @apply pointer-events-auto flex max-w-lg items-center gap-3 rounded-adm border px-4 py-2.5 shadow-lg;
+  }
+  .adm-flash-notice { @apply border-adm-border bg-adm-text text-adm-surface; }
+  .adm-flash-alert { @apply border-adm-danger bg-adm-danger text-adm-danger-fg; }
+  .adm-flash-close { @apply cursor-pointer text-lg leading-none opacity-70 hover:opacity-100; }
+
+  /* Authentication -------------------------------------------------------- */
+  .adm-auth { @apply flex items-center justify-center px-4 py-16; }
+  .adm-auth-panel { @apply flex w-full max-w-sm flex-col gap-6; }
+  .adm-auth-brand { @apply text-center text-xl font-semibold text-adm-text; }
+  .adm-auth-title { @apply mb-4 text-lg font-semibold text-adm-text; }
+  .adm-auth-lead { @apply mb-4; }
+  .adm-auth-footer { @apply mt-4 text-center; }
+}

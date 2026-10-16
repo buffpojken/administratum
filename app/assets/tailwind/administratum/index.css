@@ -1,0 +1,8 @@
+/* Entry point for the bundled stylesheet (bin/build-css). */
+@import "tailwindcss" source(none);
+@import "./theme.css";
+@import "./components.css";
+
+@source "../../../views";
+@source "../../../helpers";
+@source "../../javascripts";

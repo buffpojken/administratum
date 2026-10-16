@@ -1,0 +1,13 @@
+/.bundle/
+/doc/
+/log/*.log
+/node_modules/
+/pkg/
+/test/dummy/app/assets/tailwind/administratum.gen.css
+/test/dummy/db/*.sqlite3
+/test/dummy/db/*.sqlite3-*
+/test/dummy/log/*.log
+/test/dummy/storage/
+/test/dummy/tmp/
+/tmp/
+node_modules/

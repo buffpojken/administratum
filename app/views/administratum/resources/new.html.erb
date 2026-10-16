@@ -1,0 +1,7 @@
+<%= page_header title: t("administratum.actions.new", resource: resource_class.singular_label) do %>
+  <%= buttons_for(:new) %>
+<% end %>
+
+<div class="adm-container adm-page-body">
+  <%= render definition.form_template || "form" %>
+</div>

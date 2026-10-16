@@ -1,0 +1,42 @@
+<div class="adm-offcanvas" data-adm-offcanvas="adm-filters" hidden>
+  <div class="adm-offcanvas-backdrop" data-adm-offcanvas-close></div>
+  <aside class="adm-offcanvas-panel" role="dialog" aria-modal="true" aria-labelledby="adm-filters-title">
+    <header class="adm-offcanvas-header">
+      <h2 id="adm-filters-title" class="adm-card-title"><%= t("administratum.filters.title") %></h2>
+      <button type="button" class="adm-icon-btn" data-adm-offcanvas-close aria-label="<%= t("administratum.close") %>">&times;</button>
+    </header>
+    <div class="adm-offcanvas-body">
+      <%= search_form_for @search, url: collection_path, method: :get, html: { class: "adm-form" } do |f| %>
+        <% definition.filters.each do |filter| %>
+          <div class="adm-field">
+            <% label = filter.label || definition.model.human_attribute_name(filter.name) %>
+            <% case filter.type %>
+            <% when :select %>
+              <%= f.label filter.keys.first, label, class: "adm-label" %>
+              <%= f.select filter.keys.first, filter_collection(filter), { include_blank: t("administratum.filters.any") }, class: "adm-input" %>
+            <% when :boolean %>
+              <%= f.label filter.keys.first, label, class: "adm-label" %>
+              <%= f.select filter.keys.first, [[t("administratum.yes"), true], [t("administratum.no"), false]], { include_blank: t("administratum.filters.any") }, class: "adm-input" %>
+            <% when :date_range %>
+              <span class="adm-label"><%= label %></span>
+              <div class="adm-field-row">
+                <%= f.date_field filter.keys.first, class: "adm-input", "aria-label": t("administratum.filters.from", field: label) %>
+                <%= f.date_field filter.keys.last, class: "adm-input", "aria-label": t("administratum.filters.to", field: label) %>
+              </div>
+            <% when :number %>
+              <%= f.label filter.keys.first, label, class: "adm-label" %>
+              <%= f.number_field filter.keys.first, class: "adm-input" %>
+            <% else %>
+              <%= f.label filter.keys.first, label, class: "adm-label" %>
+              <%= f.search_field filter.keys.first, class: "adm-input" %>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="adm-form-footer">
+          <%= f.submit t("administratum.filters.apply"), class: "adm-btn adm-btn-primary", name: nil %>
+          <%= link_to t("administratum.filters.clear"), collection_path, class: "adm-btn adm-btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </aside>
+</div>

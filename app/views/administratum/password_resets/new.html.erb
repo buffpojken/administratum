@@ -1,0 +1,11 @@
+<% content_for :title, t("administratum.password_resets.title") %>
+<h1 class="adm-auth-title"><%= t("administratum.password_resets.title") %></h1>
+<p class="adm-muted adm-auth-lead"><%= t("administratum.password_resets.lead") %></p>
+<%= form_with url: administratum.password_reset_path, class: "adm-form" do |f| %>
+  <div class="adm-field">
+    <%= f.label :email, t("administratum.sessions.email"), class: "adm-label" %>
+    <%= f.email_field :email, class: "adm-input", required: true, autofocus: true, autocomplete: "username" %>
+  </div>
+  <%= f.submit t("administratum.password_resets.submit"), class: "adm-btn adm-btn-primary adm-btn-block" %>
+<% end %>
+<p class="adm-auth-footer"><%= link_to t("administratum.password_resets.back"), administratum.sign_in_path, class: "adm-link" %></p>

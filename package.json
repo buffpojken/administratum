@@ -1,0 +1,12 @@
+{
+  "name": "administratum",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i app/assets/tailwind/administratum/index.css -o app/assets/builds/administratum.css --minify",
+    "watch:css": "tailwindcss -i app/assets/tailwind/administratum/index.css -o app/assets/builds/administratum.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}

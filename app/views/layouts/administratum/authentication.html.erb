@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= administratum_title %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= administratum_color_scheme_script %>
+    <%= administratum_stylesheet_tag %>
+    <%= administratum_theme_style %>
+    <%= javascript_include_tag "administratum", type: "module" %>
+    <%= administratum_head %>
+  </head>
+  <body class="adm-body adm-auth">
+    <div class="adm-auth-panel">
+      <div class="adm-auth-brand">
+        <% if administratum_config.logo %>
+          <%= image_tag administratum_config.logo, alt: administratum_config.app_name, class: "adm-logo" %>
+        <% else %>
+          <span class="adm-brand-name"><%= administratum_config.app_name %></span>
+        <% end %>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-body">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+    <%= render "administratum/shared/flash" %>
+  </body>
+</html>

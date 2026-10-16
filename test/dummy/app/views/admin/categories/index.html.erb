@@ -1,0 +1,10 @@
+<%= page_header title: "All categories" do %>
+  <%= buttons_for(:index, nil) %>
+<% end %>
+<div class="adm-container adm-page-body">
+  <div class="adm-grid" id="category-tiles">
+    <% @resources.each do |category| %>
+      <%= link_to category.name, resource_path(category), class: "adm-card adm-tile" %>
+    <% end %>
+  </div>
+</div>

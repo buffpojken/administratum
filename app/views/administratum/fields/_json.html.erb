@@ -1,0 +1,1 @@
+<%= form.text_area field.name, **input_options(field, form:, class: "adm-input adm-code", rows: field.options.fetch(:rows, 8), value: value.is_a?(String) || value.nil? ? value : JSON.pretty_generate(value)) %>

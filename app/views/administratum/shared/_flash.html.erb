@@ -1,0 +1,9 @@
+<div class="adm-flash-stack" aria-live="polite">
+  <% flash.each do |type, message| %>
+    <% next unless message.is_a?(String) %>
+    <div class="adm-flash <%= type.to_s == "alert" ? "adm-flash-alert" : "adm-flash-notice" %>" data-adm-flash role="status">
+      <span><%= message %></span>
+      <button type="button" class="adm-flash-close" data-adm-dismiss aria-label="<%= t("administratum.close") %>">&times;</button>
+    </div>
+  <% end %>
+</div>

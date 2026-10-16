@@ -1,0 +1,9 @@
+<section class="adm-card">
+  <% if title %>
+    <header class="adm-card-header"><h2 class="adm-card-title"><%= title %></h2></header>
+  <% end %>
+  <div class="<%= flush ? "adm-card-flush" : "adm-card-body" %>"><%= body %></div>
+  <% if footer %>
+    <footer class="adm-card-footer"><%= footer %></footer>
+  <% end %>
+</section>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= administratum_title %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= administratum_color_scheme_script %>
+    <%= administratum_stylesheet_tag %>
+    <%= administratum_theme_style %>
+    <%= javascript_include_tag "administratum", type: "module" %>
+    <%= administratum_head %>
+    <%= yield :head %>
+  </head>
+  <body class="adm-body">
+    <%= render "administratum/shared/topbar" %>
+    <%= render "administratum/shared/nav" %>
+    <main class="adm-main">
+      <%= yield %>
+    </main>
+    <%= yield :panels %>
+    <%= render "administratum/shared/flash" %>
+  </body>
+</html>

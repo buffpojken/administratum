@@ -1,0 +1,14 @@
+<section class="adm-card">
+  <%= administratum_form(class: "adm-form-flush") do |form| %>
+    <% if form.object.errors.any? %>
+      <div class="adm-form-errors"><%= render "administratum/shared/form_errors", record: form.object %></div>
+    <% end %>
+    <div class="adm-form-body">
+      <%= render_fields(form) %>
+    </div>
+    <footer class="adm-form-actions">
+      <%= form.submit class: "adm-btn adm-btn-primary" %>
+      <%= link_to t("administratum.cancel"), (@resource.persisted? && definition.action_enabled?(:show) ? resource_path : (definition.action_enabled?(:index) ? collection_path : (parent_path || administratum.root_path))), class: "adm-btn adm-btn-secondary" %>
+    </footer>
+  <% end %>
+</section>

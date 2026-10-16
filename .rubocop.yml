@@ -1,0 +1,35 @@
+inherit_gem:
+  rubocop-github:
+    - config/default.yml
+    - config/rails.yml
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: disable
+  SuggestExtensions: false
+  Exclude:
+    - "test/dummy/db/schema.rb"
+    - "test/dummy/bin/**/*"
+    - "test/dummy/config/**/*"
+    - "test/dummy/config.ru"
+    - "test/dummy/Rakefile"
+    - "test/dummy/app/controllers/application_controller.rb"
+    - "test/dummy/app/helpers/application_helper.rb"
+    - "test/dummy/app/jobs/**/*"
+    - "test/dummy/app/mailers/**/*"
+    - "test/dummy/app/models/application_record.rb"
+    - "Rakefile"
+    - "bin/**/*"
+    - "node_modules/**/*"
+    - "vendor/**/*"
+
+# An admin engine is driven by declarations: it reads attributes and builds
+# route names from them, resolves templates through custom view prefixes
+# (app/views/admin/<resource> before the engine's defaults), and renders
+# field partials chosen in configuration. These cops assume none of that.
+GitHub/AvoidObjectSendWithDynamicMethod:
+  Enabled: false
+GitHub/RailsControllerRenderPathsExist:
+  Enabled: false
+GitHub/RailsViewRenderLiteral:
+  Enabled: false

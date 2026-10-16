@@ -1,0 +1,10 @@
+<% if record.errors.any? %>
+  <div class="adm-alert" role="alert">
+    <p class="adm-alert-title"><%= t("administratum.errors.title", count: record.errors.count) %></p>
+    <ul>
+      <% record.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

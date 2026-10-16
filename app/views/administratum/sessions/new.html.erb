@@ -1,0 +1,18 @@
+<% content_for :title, t("administratum.sessions.title") %>
+<h1 class="adm-auth-title"><%= t("administratum.sessions.title") %></h1>
+<%= form_with url: administratum.sign_in_path, class: "adm-form" do |f| %>
+  <div class="adm-field">
+    <%= f.label :email, t("administratum.sessions.email"), class: "adm-label" %>
+    <%= f.email_field :email, value: params[:email], class: "adm-input", required: true, autofocus: true, autocomplete: "username" %>
+  </div>
+  <div class="adm-field">
+    <%= f.label :password, t("administratum.sessions.password"), class: "adm-label" %>
+    <%= f.password_field :password, class: "adm-input", required: true, autocomplete: "current-password" %>
+  </div>
+  <label class="adm-check">
+    <%= f.checkbox :remember_me, class: "adm-checkbox" %>
+    <span><%= t("administratum.sessions.remember_me") %></span>
+  </label>
+  <%= f.submit t("administratum.sessions.submit"), class: "adm-btn adm-btn-primary adm-btn-block" %>
+<% end %>
+<p class="adm-auth-footer"><%= link_to t("administratum.password_resets.link"), administratum.new_password_reset_path, class: "adm-link" %></p>

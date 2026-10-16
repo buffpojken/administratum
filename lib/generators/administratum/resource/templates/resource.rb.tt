@@ -1,0 +1,20 @@
+# frozen_string_literal: true
+
+class <%= class_name %>Admin < Administratum::Resource
+  # filters :name
+
+  # index do
+  #   column :name
+  #   column :created_at
+  # end
+
+  form do
+<% if field_names.any? -%>
+<% field_names.each do |name| -%>
+    field :<%= name %>
+<% end -%>
+<% else -%>
+    # field :name
+<% end -%>
+  end
+end

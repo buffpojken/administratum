@@ -1,0 +1,8 @@
+<section class="adm-card" id="custom-tag-form">
+  <%= administratum_form do |form| %>
+    <div class="adm-card-body">
+      <%= render_field form, :name %>
+    </div>
+    <div class="adm-card-footer"><%= form.submit "Save tag", class: "adm-btn adm-btn-primary" %></div>
+  <% end %>
+</section>

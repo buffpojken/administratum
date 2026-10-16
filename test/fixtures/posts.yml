@@ -1,0 +1,9 @@
+hello:
+  title: Hello world
+  body: First post
+  published: false
+  category: news
+
+draft:
+  title: Draft thoughts
+  published: true

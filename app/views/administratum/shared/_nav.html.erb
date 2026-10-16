@@ -1,0 +1,10 @@
+<nav id="adm-nav" class="adm-nav" aria-label="<%= t("administratum.menu") %>">
+  <div class="adm-container">
+    <ul class="adm-nav-list">
+      <li><%= link_to t("administratum.dashboard"), administratum.root_path, class: class_names("adm-nav-link", "adm-nav-link-active" => controller_name == "dashboard") %></li>
+      <% administratum_nav_items.each do |item| %>
+        <li><%= link_to item[:label], item[:path], class: class_names("adm-nav-link", "adm-nav-link-active" => item[:active]), "aria-current": (item[:active] ? "page" : nil) %></li>
+      <% end %>
+    </ul>
+  </div>
+</nav>

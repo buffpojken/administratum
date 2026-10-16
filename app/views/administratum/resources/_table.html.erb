@@ -1,0 +1,42 @@
+<section class="adm-card">
+  <div class="adm-table-wrap">
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <% definition.index_columns.each do |column| %>
+            <th scope="col"><%= column.sortable ? sort_link(@search, column.name, column_label(column)) : column_label(column) %></th>
+          <% end %>
+          <th scope="col" class="adm-table-actions"><span class="adm-sr-only"><%= t("administratum.actions.title") %></span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @resources.each do |record| %>
+          <tr>
+            <% definition.index_columns.each_with_index do |column, index| %>
+              <td>
+                <% if index.zero? && !column.block && definition.action_enabled?(:show) %>
+                  <%= link_to column_value(record, column), resource_path(record), class: "adm-link" %>
+                <% else %>
+                  <%= column_value(record, column) %>
+                <% end %>
+              </td>
+            <% end %>
+            <td class="adm-table-actions"><div class="adm-btn-group"><%= buttons_for(:row, record) %></div></td>
+          </tr>
+        <% end %>
+        <% if @resources.empty? %>
+          <tr><td colspan="<%= definition.index_columns.size + 1 %>" class="adm-empty"><%= t("administratum.empty", resources: resource_class.plural_label.downcase) %></td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <footer class="adm-card-footer adm-table-footer">
+    <div class="adm-muted">
+      <%== pagy_info(@pagy) %>
+      <% if definition.csv %>
+        · <%= link_to t("administratum.download_csv"), url_for(format: :csv, q: request.query_parameters[:q]), class: "adm-link" %>
+      <% end %>
+    </div>
+    <div class="adm-pagy"><%== pagy_nav(@pagy) if @pagy.pages > 1 %></div>
+  </footer>
+</section>

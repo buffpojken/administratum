@@ -1,0 +1,4 @@
+<%# A field rendered by a JS island. The island receives the input name and current value and must render its own input(s). %>
+<% extra = field.options[:props] %>
+<% extra = extra.arity.zero? ? instance_exec(&extra) : instance_exec(resource, &extra) if extra.respond_to?(:call) %>
+<%= island field.options.fetch(:island), props: { name: form.field_name(field.name), id: form.field_id(field.name), value: value }.merge(extra || {}) %>

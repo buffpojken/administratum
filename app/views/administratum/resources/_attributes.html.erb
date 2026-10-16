@@ -1,0 +1,10 @@
+<section class="adm-card">
+  <dl class="adm-attributes">
+    <% definition.resolved_show_attributes.each do |attribute| %>
+      <div class="adm-attribute">
+        <dt><%= column_label(attribute) %></dt>
+        <dd><%= column_value(@resource, attribute) %></dd>
+      </div>
+    <% end %>
+  </dl>
+</section>

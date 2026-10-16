@@ -1,0 +1,64 @@
+en:
+  administratum:
+    "yes": "Yes"
+    "no": "No"
+    dashboard: Dashboard
+    menu: Menu
+    close: Close
+    cancel: Cancel
+    confirm: Are you sure?
+    toggle_theme: Toggle dark mode
+    empty: No %{resources} yet.
+    download_csv: Download CSV
+    actions:
+      title: Actions
+      new: New %{resource}
+      edit: Edit
+      edit_resource: Edit %{title}
+      view: View
+      destroy: Delete
+    flash:
+      created: "%{resource} was created."
+      updated: "%{resource} was updated."
+      destroyed: "%{resource} was deleted."
+    errors:
+      title:
+        one: 1 error prevented saving
+        other: "%{count} errors prevented saving"
+    filters:
+      title: Filters
+      apply: Apply
+      clear: Clear
+      any: Any
+      from: "%{field} from"
+      to: "%{field} to"
+    upload:
+      file: File
+      submit: Upload
+    sessions:
+      title: Sign in
+      email: Email
+      password: Password
+      remember_me: Remember me
+      submit: Sign in
+      sign_out: Sign out
+      invalid: Invalid email or password.
+      unauthenticated: Please sign in to continue.
+      signed_out: You have been signed out.
+    password_resets:
+      link: Forgot your password?
+      title: Reset password
+      lead: Enter your email and we'll send you a link to choose a new password.
+      submit: Send reset link
+      back: Back to sign in
+      sent: If that email belongs to an admin, a reset link is on its way.
+      new_password: Choose a new password
+      confirmation: Confirm password
+      save: Save password
+      updated: Your password was changed. Please sign in.
+      subject: Reset your %{app} admin password
+      email:
+        greeting: Hello %{email},
+        body: Someone asked to reset your %{app} admin password. Use the link below to choose a new one.
+        link: Choose a new password
+        ignore: If you didn't ask for this, you can ignore this email.

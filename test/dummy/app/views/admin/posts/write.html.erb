@@ -1,0 +1,4 @@
+<%= page_header title: "Write #{@resource.title}" %>
+<div class="adm-container adm-page-body">
+  <%= island :post_writer, props: { body: @resource.body, saveUrl: action_path(:save_body) } %>
+</div>

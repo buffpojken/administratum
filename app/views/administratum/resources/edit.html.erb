@@ -1,0 +1,7 @@
+<%= page_header title: t("administratum.actions.edit_resource", title: record_title(@resource)) do %>
+  <%= buttons_for(:edit) %>
+<% end %>
+
+<div class="adm-container adm-page-body">
+  <%= render definition.form_template || "form" %>
+</div>
