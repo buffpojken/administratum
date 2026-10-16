@@ -17,11 +17,25 @@ class TemplatesTest < ActionDispatch::IntegrationTest
     assert_select "input[name='tag[name]']"
   end
 
+  test "view prefix is configurable" do
+    Administratum.config.view_prefix = "elsewhere"
+    get administratum.categories_path
+    assert_select "table"
+    assert_select "#category-tiles", count: 0
+  ensure
+    Administratum.config.view_prefix = "admin"
+  end
+
   test "pages load the bundled stylesheet, runtime and host head" do
     get administratum.posts_path
     assert_select "link[rel=stylesheet][href*=administratum]"
     assert_select "script[type=module][src*=administratum]"
     assert_select "script[type=module][src*=dummy_admin]"
+  end
+
+  test "the color scheme script always sets a theme class" do
+    get administratum.posts_path
+    assert_includes response.body, 'prefers-color-scheme: dark)").matches?"dark":"light"'
   end
 
   test "theme overrides render as css variables" do

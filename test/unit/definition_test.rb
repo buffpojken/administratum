@@ -3,6 +3,9 @@
 require "test_helper"
 
 class DefinitionTest < ActiveSupport::TestCase
+  # Loading the registry is what installs the Ransack allowlist on each model.
+  setup { Administratum.registry.resources }
+
   test "infers field types from the schema" do
     fields = PostAdmin.definition.fields.index_by(&:name)
     assert_equal :string, fields[:title].type
@@ -33,6 +36,11 @@ class DefinitionTest < ActiveSupport::TestCase
     assert_includes Post.ransackable_attributes(:administratum), "title"
     assert_includes Post.ransackable_attributes(:administratum), "published"
     assert_includes Post.ransackable_attributes(:administratum), "created_at"
+  end
+
+  test "models without their own allowlist only expose declared attributes" do
+    assert_not_includes Post.ransackable_attributes(:administratum), "body"
+    assert_empty Post.ransackable_associations(:administratum)
   end
 
   test "subclasses copy their parent's definition" do

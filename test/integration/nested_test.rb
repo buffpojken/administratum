@@ -41,4 +41,12 @@ class NestedTest < ActionDispatch::IntegrationTest
     assert_equal posts(:draft), attachment.post
     assert_redirected_to administratum.edit_post_attachment_path(posts(:draft), attachment)
   end
+
+  test "destroying without an index page returns to the parent" do
+    AttachmentAdmin.definition.enable_actions(except: %i[show index])
+    delete administratum.post_attachment_path(posts(:hello), attachments(:photo))
+    assert_redirected_to administratum.post_path(posts(:hello))
+  ensure
+    AttachmentAdmin.definition.enable_actions(except: :show)
+  end
 end

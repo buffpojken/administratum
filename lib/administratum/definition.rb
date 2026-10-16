@@ -196,6 +196,7 @@ module Administratum
       names = filters.map { |filter| filter.name.to_s }
       names += index_columns.select(&:sortable).map { |column| column.name.to_s }
       names << title.to_s if title
+      names += Array(default_sort).map { |sort| sort.to_s.split.first }
       names.uniq & model.column_names
     end
 

@@ -29,7 +29,9 @@ Read this before changing any view, helper or stylesheet in the gem.
 | `--radius-adm` | Corner radius for cards, inputs and buttons |
 | `--font-adm`, `--font-adm-mono` | Body and code fonts |
 
-Dark values are set under `:root.dark` and under `prefers-color-scheme: dark` (unless `:root.light` is set). The theme toggle stores the choice in `localStorage["administratum-theme"]`.
+Dark values are set under `:root.dark`, and under `prefers-color-scheme: dark` unless `:root.light` is set, which covers pages with JS disabled.
+
+An inline script always puts `.dark` or `.light` on `<html>` before first paint: the stored choice from `localStorage["administratum-theme"]` if there is one, otherwise the OS preference. Until the viewer picks a theme, it follows OS changes. Host styles can therefore rely on `.dark`, for example through Tailwind's class-based `dark` variant, which `theme.css` defines.
 
 Overrides, in order of precedence:
 1. `config.theme` / `config.dark_theme`, rendered as an inline `<style>`.

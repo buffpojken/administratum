@@ -15,20 +15,25 @@ module Administratum
     def ransackable_attributes(auth_object = nil)
       return super unless auth_object == :administratum
 
-      Administratum.registry.ransackable_attributes_for(self) | own_allowlist { super }
+      Administratum.registry.ransackable_attributes_for(self) | own_allowlist(:ransackable_attributes, auth_object)
     end
 
     def ransackable_associations(auth_object = nil)
       return super unless auth_object == :administratum
 
-      own_allowlist { super }
+      own_allowlist(:ransackable_associations, auth_object)
     end
 
     private
 
-    # Ransack's defaults raise when a model has no allowlist.
-    def own_allowlist
-      Array(yield).map(&:to_s)
+    # The model's own allowlist, if it defines one. Ransack's default either
+    # raises (Ransack 4.1+) or, in some 4.x versions, allows every column with a
+    # deprecation warning; neither should widen what the admin can search.
+    def own_allowlist(name, auth_object)
+      definition = method(name).super_method
+      return [] if definition.nil? || definition.owner.name.to_s.start_with?("Ransack::")
+
+      Array(definition.call(auth_object)).map(&:to_s)
     rescue RuntimeError
       []
     end

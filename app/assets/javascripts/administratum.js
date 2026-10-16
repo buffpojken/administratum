@@ -94,24 +94,41 @@ function closeDropdowns(except) {
 
 // ------------------------------------------------------------------- theme --
 
-function currentTheme() {
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
+function storedTheme() {
+  try {
+    const value = localStorage.getItem(THEME_KEY)
+    return value === "dark" || value === "light" ? value : null
+  } catch (_error) {
+    return null
+  }
+}
+
+function applyTheme(theme) {
   const root = document.documentElement
-  if (root.classList.contains("dark")) return "dark"
-  if (root.classList.contains("light")) return "light"
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  root.classList.remove("dark", "light")
+  root.classList.add(theme)
+}
+
+function currentTheme() {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light"
 }
 
 function toggleTheme() {
   const next = currentTheme() === "dark" ? "light" : "dark"
-  const root = document.documentElement
-  root.classList.remove("dark", "light")
-  root.classList.add(next)
+  applyTheme(next)
   try {
     localStorage.setItem(THEME_KEY, next)
   } catch (_error) {
     // Storage unavailable (private mode); the choice lasts for this page only.
   }
 }
+
+// Follow the OS setting until the viewer picks a theme themselves.
+darkQuery.addEventListener("change", (event) => {
+  if (!storedTheme()) applyTheme(event.matches ? "dark" : "light")
+})
 
 // ------------------------------------------------------------------- flash --
 

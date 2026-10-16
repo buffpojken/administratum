@@ -23,6 +23,10 @@ end
 # Keep the generated import file current wherever assets are built.
 # Declaring the prerequisite (rather than looking the task up) works whichever
 # order the rake files load in.
-if File.exist?("app/assets/tailwind/administratum.gen.css")
+# The generated file is gitignored, so on a fresh checkout it only exists after
+# a sync; also hook in when the initializer opts into host mode.
+host_mode = File.exist?("config/initializers/administratum.rb") &&
+            File.read("config/initializers/administratum.rb").match?(/^\s*config\.stylesheet\s*=\s*:host/)
+if host_mode || File.exist?("app/assets/tailwind/administratum.gen.css")
   %w[assets:precompile vite:build].each { |name| task(name).enhance(["administratum:tailwind:sync"]) }
 end

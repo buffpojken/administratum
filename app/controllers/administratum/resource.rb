@@ -54,7 +54,7 @@ module Administratum
 
     def destroy
       @resource.destroy!
-      redirect_to collection_path, notice: t("administratum.flash.destroyed", resource: resource_class.singular_label)
+      redirect_to after_destroy_path, notice: t("administratum.flash.destroyed", resource: resource_class.singular_label)
     end
 
     # Resources defined in the host app live outside the engine's namespace,
@@ -71,10 +71,10 @@ module Administratum
 
     private
 
-    # Templates for this resource live in app/views/admin/<route_key>, falling
-    # back to the engine's defaults.
+    # Templates for this resource live in app/views/<view_prefix>/<route_key>
+    # (app/views/admin/posts by default), falling back to the engine's defaults.
     def _prefixes
-      @_prefixes ||= ["admin/#{resource_class.route_key}", "administratum/resources"]
+      @_prefixes ||= ["#{Administratum.config.view_prefix}/#{resource_class.route_key}", "administratum/resources"]
     end
 
     def resource_class
@@ -135,6 +135,14 @@ module Administratum
       elsif definition.action_enabled?(:edit) then edit_resource_path(record)
       else collection_path
       end
+    end
+
+    # Resources without an index page (e.g. nested ones managed from their
+    # parent's page) go back to the parent, or the dashboard.
+    def after_destroy_path
+      return collection_path if definition.action_enabled?(:index)
+
+      parent_path || administratum.root_path
     end
 
     def index_csv(records)

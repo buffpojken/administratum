@@ -71,8 +71,8 @@ module Administratum
         crumbs << [parent_resource.plural_label, (parent_paths.index if parent_resource.definition.action_enabled?(:index))]
         crumbs << [record_title(parent_record), parent_path]
       end
-      index = collection_path if definition.action_enabled?(:index)
-      crumbs << [resource_class.plural_label, index]
+      # Resources without an index (managed from their parent) get no crumb of their own.
+      crumbs << [resource_class.plural_label, collection_path] if definition.action_enabled?(:index)
       crumbs << [record_title(@resource), (resource_path if definition.action_enabled?(:show))] if @resource&.persisted? && action_name != "show"
       crumbs
     end

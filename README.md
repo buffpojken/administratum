@@ -142,6 +142,8 @@ To replace a page, add a file:
 | `<custom_action>.html.erb` | A custom action's page |
 
 You can also point `form template: "admin/posts/editor"` at a partial elsewhere.
+To keep these templates somewhere other than `app/views/admin` (for example while an
+older admin still lives there), set `config.view_prefix = "admin_next"`.
 
 Helpers available in templates:
 

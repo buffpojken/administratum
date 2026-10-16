@@ -27,6 +27,8 @@ module Administratum
     attr_accessor :helpers
     # Directories scanned for resource definitions, relative to Rails.root.
     attr_accessor :resource_paths
+    # View directory for resource templates: app/views/<view_prefix>/<route_key>.
+    attr_accessor :view_prefix
     # Token overrides, e.g. { primary: "#7c3aed" } becomes --color-adm-primary.
     attr_reader :theme, :dark_theme
     attr_reader :stylesheet, :field_types
@@ -39,6 +41,7 @@ module Administratum
       @manage_users = true
       @helpers = []
       @resource_paths = ["app/admin"]
+      @view_prefix = "admin"
       @theme = {}
       @dark_theme = {}
       @stylesheet = :bundled

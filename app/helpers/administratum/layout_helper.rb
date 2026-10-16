@@ -26,10 +26,12 @@ module Administratum
       tag.style(css.html_safe, nonce: content_security_policy_nonce) # rubocop:disable Rails/OutputSafety
     end
 
-    # Applies the stored light/dark choice before first paint.
+    # Puts .dark or .light on <html> before first paint: the stored choice, else
+    # the OS preference. Always setting a class gives host CSS a reliable
+    # `.dark` hook (Tailwind's class-based dark variant, editor styles…).
     def administratum_color_scheme_script
       javascript_tag(<<~JS, nonce: true)
-        (function(){try{var m=localStorage.getItem("administratum-theme");if(m==="dark"||m==="light"){document.documentElement.classList.add(m)}}catch(e){}})();
+        (function(){var m=null;try{m=localStorage.getItem("administratum-theme")}catch(e){}if(m!=="dark"&&m!=="light"){m=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.classList.add(m)})();
       JS
     end
 

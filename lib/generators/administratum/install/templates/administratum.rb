@@ -33,6 +33,9 @@ Administratum.configure do |config|
   # Extra helper modules for admin views.
   # config.helpers = [ApplicationHelper]
 
+  # Resource templates are looked up in app/views/<view_prefix>/<resource>.
+  # config.view_prefix = "admin"
+
   # Set to false to hide admin user management.
   # config.manage_users = true
 end
