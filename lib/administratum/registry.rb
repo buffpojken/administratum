@@ -17,6 +17,15 @@ module Administratum
       resources.find { |klass| klass.controller_id == id }
     end
 
+    def pages
+      ensure_loaded!
+      Administratum::Page.descendants.select { |klass| live?(klass) && !klass.abstract_page? }.sort_by(&:name)
+    end
+
+    def find_page_by_controller_id(id)
+      pages.find { |klass| klass.controller_id == id }
+    end
+
     def top_level
       resources.reject { |klass| klass.definition.parent }
     end
@@ -34,6 +43,12 @@ module Administratum
     def menu_items
       resources.reject { |klass| klass.definition.menu.hidden || klass.definition.parent || !klass.definition.action_enabled?(:index) }
                .sort_by { |klass| [klass.definition.menu.priority, klass.plural_label] }
+    end
+
+    # Resources and pages for the top navigation, by priority then label.
+    def navigation
+      (menu_items + pages.reject { |page| page.definition.menu.hidden })
+        .sort_by { |klass| [klass.definition.menu.priority, klass.menu_label] }
     end
 
     def ransackable_attributes_for(model)
@@ -56,7 +71,16 @@ module Administratum
       return if @loaded
 
       @loaded = true
-      resource_dirs.each { |dir| Rails.autoloaders.main.eager_load_dir(dir) }
+      resource_dirs.each { |dir| load_dir(dir) }
+    end
+
+    # Another admin (ActiveAdmin, say) may own app/admin and take it away from
+    # Zeitwerk. Skip such a directory rather than break route loading.
+    def load_dir(dir)
+      Rails.autoloaders.main.eager_load_dir(dir)
+    rescue Zeitwerk::Error => e
+      Rails.logger&.warn("[Administratum] Skipping #{dir}: #{e.message}. Point config.resource_paths at a directory " \
+                         "Rails autoloads, e.g. app/admin_next.")
     end
 
     # After a reload, stale classes can linger in descendants until GC.

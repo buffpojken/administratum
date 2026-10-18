@@ -14,10 +14,12 @@ module Administratum
     before_action :load_resource, if: :member_request?
 
     helper_method :definition, :resource_class, :paths, :paths_for, :parent_record, :collection_path, :new_resource_path,
-                  :resource_path, :edit_resource_path, :action_path, :resource_form_path, :parent_path
+                  :resource_path, :edit_resource_path, :action_path, :resource_form_path, :parent_path, :current_index_scope,
+                  :index_scope_count
 
     def index
-      @search = scoped_collection.ransack(params[:q], auth_object: :administratum)
+      collection = current_index_scope ? current_index_scope.apply(scoped_collection) : scoped_collection
+      @search = collection.ransack(params[:q], auth_object: :administratum)
       @search.sorts = definition.default_sort if @search.sorts.empty? && definition.default_sort
 
       respond_to do |format|
@@ -97,6 +99,18 @@ module Administratum
     def scoped_collection
       base = @parent ? @parent.public_send(definition.parent.association) : model.all
       definition.scope_block ? definition.scope_block.call(base) : base
+    end
+
+    # The active index tab, from ?scope=, or nil when the resource declares none.
+    def current_index_scope
+      return @current_index_scope if defined?(@current_index_scope)
+
+      @current_index_scope = definition.index_scope(params[:scope])
+    end
+
+    # Records in a tab, with the current filters applied.
+    def index_scope_count(index_scope)
+      index_scope.apply(scoped_collection).ransack(params[:q], auth_object: :administratum).result.count
     end
 
     def build_resource(attributes = {})

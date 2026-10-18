@@ -95,6 +95,12 @@
   .adm-table-footer { @apply flex flex-wrap items-center justify-between gap-3; }
   .adm-empty { @apply py-10 text-center text-adm-muted; }
 
+  .adm-tabs { @apply -mb-2 flex flex-wrap gap-x-6 gap-y-1 border-b border-adm-border; }
+  .adm-tab {
+    @apply -mb-px inline-flex items-center gap-2 border-b-2 border-transparent py-2 font-medium text-adm-muted no-underline hover:text-adm-text;
+  }
+  .adm-tab-active { @apply border-adm-primary text-adm-text; }
+  .adm-tab-count { @apply rounded-full bg-adm-surface-muted px-2 py-0.5 text-xs text-adm-muted; }
   .adm-pagy .pagy { @apply flex items-center gap-1; }
   .adm-pagy .pagy a {
     @apply rounded-adm px-2.5 py-1 text-adm-text no-underline hover:bg-adm-surface;

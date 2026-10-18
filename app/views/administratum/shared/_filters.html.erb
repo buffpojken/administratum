@@ -7,6 +7,7 @@
     </header>
     <div class="adm-offcanvas-body">
       <%= search_form_for @search, url: collection_path, method: :get, html: { class: "adm-form" } do |f| %>
+        <%= hidden_field_tag :scope, current_index_scope.name, id: nil if current_index_scope %>
         <% definition.filters.each do |filter| %>
           <div class="adm-field">
             <% label = filter.label || definition.model.human_attribute_name(filter.name) %>
@@ -34,7 +35,7 @@
         <% end %>
         <div class="adm-form-footer">
           <%= f.submit t("administratum.filters.apply"), class: "adm-btn adm-btn-primary", name: nil %>
-          <%= link_to t("administratum.filters.clear"), collection_path, class: "adm-btn adm-btn-secondary" %>
+          <%= link_to t("administratum.filters.clear"), collection_path(scope: current_index_scope&.name), class: "adm-btn adm-btn-secondary" %>
         </div>
       <% end %>
     </div>

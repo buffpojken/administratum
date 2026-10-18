@@ -93,9 +93,15 @@ module Administratum
 
     Menu = Struct.new(:label, :priority, :hidden, keyword_init: true)
 
+    # A tab above the index table. Without a block it calls the model scope of the same name.
+    IndexScope = Struct.new(:name, :label, :block, :default, :count, keyword_init: true) do
+      def apply(relation) = block ? block.call(relation) : relation.public_send(name)
+      def display_label = label || I18n.t("administratum.scopes.#{name}", default: name.to_s.humanize)
+    end
+
     attr_accessor :model, :title_attribute, :permitted, :parent, :form_template, :scope_block, :route_key, :label,
                   :plural_label, :per_page, :default_sort, :csv
-    attr_reader :fields, :columns, :custom_actions, :buttons, :show_attributes, :enabled_actions, :menu
+    attr_reader :fields, :columns, :custom_actions, :buttons, :show_attributes, :enabled_actions, :menu, :index_scopes
 
     def initialize
       @fields = []
@@ -104,6 +110,7 @@ module Administratum
       @custom_actions = {}
       @buttons = []
       @show_attributes = []
+      @index_scopes = []
       @enabled_actions = BUILT_IN_ACTIONS.dup
       @menu = Menu.new(priority: 100, hidden: false)
       @csv = false
@@ -117,6 +124,7 @@ module Administratum
       @custom_actions = source.custom_actions.dup
       @buttons = source.buttons.map(&:dup)
       @show_attributes = rebind(source.show_attributes)
+      @index_scopes = source.index_scopes.dup
       @enabled_actions = source.enabled_actions.dup
       @menu = source.menu.dup
     end
@@ -237,6 +245,17 @@ module Administratum
 
     def buttons_for(page)
       buttons.select { |button| button.pages.include?(page.to_sym) }
+    end
+
+    def add_index_scope(name, label: nil, default: false, count: true, &block)
+      index_scopes.reject! { |index_scope| index_scope.name == name.to_sym }
+      index_scopes << IndexScope.new(name: name.to_sym, label:, block:, default:, count:)
+    end
+
+    # The tab named by `name`, else the default tab (the first one unless one says `default: true`).
+    def index_scope(name)
+      index_scopes.find { |index_scope| index_scope.name.to_s == name.to_s } ||
+        index_scopes.find(&:default) || index_scopes.first
     end
 
     def add_show_attribute(name, as: nil, label: nil, &)

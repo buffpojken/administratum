@@ -25,6 +25,7 @@ en:
       title:
         one: 1 error prevented saving
         other: "%{count} errors prevented saving"
+    scope_tabs: Views
     filters:
       title: Filters
       apply: Apply

@@ -2,6 +2,9 @@
 
 module Administratum
   class SessionsController < ApplicationController
+    # remember_me lives here; Devise only mixes it into its own controllers.
+    include Devise::Controllers::Rememberable
+
     layout "administratum/authentication"
 
     skip_before_action :authenticate_admin!, only: %i[new create]

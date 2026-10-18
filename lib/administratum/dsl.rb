@@ -3,6 +3,38 @@
 module Administratum
   # Class-level DSL for resource classes. See README for the full reference.
   module DSL
+    # Declarations shared by resources and pages.
+    module Common
+      # A button on one or more pages (:index, :show, :new, :edit, :row, :page or a
+      # custom action's name). It triggers the custom action of the same name
+      # unless `action:` or `to:` (a lambda returning a path) is given.
+      def button(name, on:, label: nil, action: nil, to: nil, method: nil, confirm: nil, if: nil, style: :secondary,
+                 panel: nil, upload: false)
+        definition.add_button(name, on:, label:, action:, to:, method:, confirm:, condition: binding.local_variable_get(:if),
+                                    style:, panel:, upload:)
+      end
+
+      # `menu false` hides it from navigation.
+      def menu(options = {})
+        if options == false
+          definition.menu.hidden = true
+        else
+          definition.menu.label = options[:label] if options[:label]
+          definition.menu.priority = options[:priority] if options[:priority]
+        end
+      end
+
+      def route(key)
+        definition.route_key = key.to_s
+      end
+
+      def controller_id
+        name.underscore.tr("/", "_")
+      end
+    end
+
+    include Common
+
     # Builds `form do ... end` field lists.
     class FormBuilder
       def initialize(definition)
@@ -96,8 +128,12 @@ module Administratum
       definition.permitted = attributes
     end
 
-    # Narrows every query this resource makes. The block receives the relation.
-    def scope(&block)
+    # With a block only, narrows every query this resource makes (the block receives the relation).
+    # With a name, adds a tab above the index: `scope :published` calls Post.published, or pass a
+    # block. Options: `default: true`, `label:`, `count: false` to skip the count query.
+    def scope(name = nil, label: nil, default: false, count: true, &block)
+      return definition.add_index_scope(name, label:, default:, count:, &block) if name
+
       definition.scope_block = block
     end
 
@@ -121,33 +157,6 @@ module Administratum
 
     def collection_action(name, method: :get)
       definition.add_action(name, http_method: method, scope: :collection)
-    end
-
-    # A button on one or more pages (:index, :show, :new, :edit, :row or a
-    # custom action's name). It triggers the custom action of the same name
-    # unless `action:` or `to:` (a lambda returning a path) is given.
-    def button(name, on:, label: nil, action: nil, to: nil, method: nil, confirm: nil, if: nil, style: :secondary,
-               panel: nil, upload: false)
-      definition.add_button(name, on:, label:, action:, to:, method:, confirm:, condition: binding.local_variable_get(:if),
-                                  style:, panel:, upload:)
-    end
-
-    # `menu false` hides the resource from navigation.
-    def menu(options = {})
-      if options == false
-        definition.menu.hidden = true
-      else
-        definition.menu.label = options[:label] if options[:label]
-        definition.menu.priority = options[:priority] if options[:priority]
-      end
-    end
-
-    def route(key)
-      definition.route_key = key.to_s
-    end
-
-    def controller_id
-      name.underscore.tr("/", "_")
     end
 
     def route_key

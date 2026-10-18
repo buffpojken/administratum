@@ -64,6 +64,7 @@ module Administratum
 
     def default_breadcrumbs
       crumbs = [[administratum_config.app_name, administratum.root_path]]
+      crumbs << [page_class.page_title, page_path] if controller.is_a?(Administratum::Page) && action_name != "index"
       return crumbs unless controller.is_a?(Administratum::Resource)
 
       if parent_record && (parent_resource = resource_class.parent_resource)
@@ -105,6 +106,22 @@ module Administratum
         form = { data: confirm ? { adm_confirm: confirm } : {} }
         button_to label, url, method:, form:, form_class: "adm-inline-form", **options
       end
+    end
+
+    # Tabs for the resource's index scopes. Switching tab keeps filters and sorting
+    # but goes back to the first page.
+    def index_scope_tabs
+      return if definition.index_scopes.empty?
+
+      query = request.query_parameters.except("page", "scope").symbolize_keys
+      tabs = definition.index_scopes.map do |index_scope|
+        active = index_scope == current_index_scope
+        label = safe_join([index_scope.display_label,
+                           (tag.span(number_with_delimiter(index_scope_count(index_scope)), class: "adm-tab-count") if index_scope.count)])
+        link_to label, collection_path(**query, scope: index_scope.name),
+                class: class_names("adm-tab", "adm-tab-active" => active), "aria-current": (active ? "page" : nil)
+      end
+      tag.nav(safe_join(tabs), class: "adm-tabs", "aria-label": t("administratum.scope_tabs"))
     end
 
     def filters?

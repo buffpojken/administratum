@@ -8,6 +8,8 @@ class Post < ApplicationRecord
 
   validates :title, presence: true
 
+  scope :drafts, -> { where(published: false) }
+
   def self.export_json
     all.map { |post| post.slice(:title, :body, :published) }.to_json
   end

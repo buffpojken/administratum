@@ -34,7 +34,7 @@
     <div class="adm-muted">
       <%== pagy_info(@pagy) %>
       <% if definition.csv %>
-        · <%= link_to t("administratum.download_csv"), url_for(format: :csv, q: request.query_parameters[:q]), class: "adm-link" %>
+        · <%= link_to t("administratum.download_csv"), url_for(format: :csv, q: request.query_parameters[:q], scope: current_index_scope&.name), class: "adm-link" %>
       <% end %>
     </div>
     <div class="adm-pagy"><%== pagy_nav(@pagy) if @pagy.pages > 1 %></div>

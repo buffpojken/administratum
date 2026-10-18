@@ -43,8 +43,9 @@ module Administratum
     end
 
     def administratum_nav_items
-      Administratum.registry.menu_items.map do |resource|
-        { label: resource.menu_label, path: Administratum::Paths.new(resource, self).index, active: nav_active?(resource) }
+      Administratum.registry.navigation.map do |item|
+        path = item < Administratum::Page ? administratum.public_send(:"#{item.route_key}_page_path") : Administratum::Paths.new(item, self).index
+        { label: item.menu_label, path:, active: nav_active?(item) }
       end
     end
 
@@ -62,6 +63,7 @@ module Administratum
     private
 
     def nav_active?(resource)
+      return controller.instance_of?(resource) if controller.is_a?(Administratum::Page)
       return false unless controller.is_a?(Administratum::Resource)
 
       current = controller.class

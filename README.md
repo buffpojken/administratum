@@ -14,7 +14,8 @@ a JS island running Vue, React or anything else.
 - Framework-agnostic JS islands, mounted with props from ERB.
 - Styling through design tokens. Use the bundled CSS, or build it with your own Tailwind v4.
 
-Requires Rails 8 and Propshaft.
+Requires Rails 8, with Propshaft or Sprockets. With Sprockets, add `//= link administratum.css` and
+`//= link administratum.js` to `app/assets/config/manifest.js`.
 
 ## Install
 
@@ -51,6 +52,23 @@ bin/rails administratum:create_user EMAIL=you@example.com
 bin/rails g administratum:resource Post    # app/admin/post_admin.rb
 ```
 
+### Alongside ActiveAdmin
+
+ActiveAdmin also uses `app/admin`, and removes it from Zeitwerk. Administratum skips that directory
+with a warning in the log, so nothing breaks. Its resources then need a directory of their own, and
+**this initializer should ship in the same deploy as the Gemfile change**:
+
+```ruby
+# config/initializers/administratum.rb
+Administratum.configure do |config|
+  config.resource_paths = ["app/admin_next"]
+  config.view_prefix = "admin_next"        # templates in app/views/admin_next/<resource>/
+end
+```
+
+Mount the engine away from ActiveAdmin's path with `bin/rails g administratum:install --path=/admin_next`.
+Once ActiveAdmin is gone, move everything back to `app/admin` and drop both settings.
+
 ## Resources
 
 ```ruby
@@ -86,6 +104,7 @@ class PostAdmin < Administratum::Resource
 
   permit :title, :body, :published, :category_id, tag_ids: []   # default: the form fields
   scope { |posts| posts.includes(:category) }                    # every query starts here
+  scope :published                                               # index tab, calls Post.published
   actions except: :destroy                                       # :index :show :new :edit :destroy
   menu label: "Articles", priority: 10                           # `menu false` hides it
 end
@@ -148,7 +167,27 @@ config.field_types.register :tag_list, partial: "admin/fields/tags", param: :arr
 The label, hint and errors wrapper is added for you. To restyle a built-in type,
 shadow its partial at `app/views/administratum/fields/_<type>.html.erb`.
 
-### Custom pages and forms
+### Index scopes
+
+Named scopes become tabs above the index table, each with a record count:
+
+```ruby
+class PostAdmin < Administratum::Resource
+  scope :all                                               # Post.all
+  scope :published                                         # Post.published
+  scope(:recent, label: "This week") { |posts| posts.where(created_at: 1.week.ago..) }
+  scope :archived, count: false                            # skip the count query
+end
+```
+
+- The first tab is active unless one says `default: true`. The URL carries `?scope=published`.
+- Counts and results respect the current filters. Switching tabs keeps filters and sorting, and goes back to page 1.
+- The CSV export follows the active tab.
+- Labels default to `administratum.scopes.<name>` in your locale, then to the humanized name.
+- `scope` with only a block (no name) still sets the base query for every request, not a tab.
+- In a custom `index.html.erb`, render the tabs with `<%= index_scope_tabs %>`.
+
+### Template overrides
 
 Templates are looked up in `app/views/admin/<route_key>/` first, then in the engine.
 To replace a page, add a file:
@@ -247,6 +286,44 @@ Button options:
 Non-GET buttons render as small forms, so no rails-ujs is needed.
 
 A panel partial receives `resource:` and `button:`.
+
+## Pages
+
+A page is a screen that isn't CRUD on one model, like a report, a tool or a status page. It
+lives in `app/admin` like a resource, gets a menu entry and a route, and is a controller:
+
+```ruby
+# app/admin/reports_page.rb
+class ReportsPage < Administratum::Page
+  label "Reports"                          # default: from the class name
+  menu priority: 5                         # or `menu false`
+  page_action :refresh, method: :post      # POST /administratum/reports/refresh
+  page_action :weekly                      # GET  /administratum/reports/weekly
+  button :refresh, confirm: "Refresh?", style: :primary   # buttons go in the page header
+  button :weekly
+
+  def index
+    @stats = Stats.compute
+  end
+
+  def refresh
+    Stats.refresh!
+    redirect_to page_path, notice: "Refreshed"
+  end
+end
+```
+
+```erb
+<%# app/views/admin/reports/_content.html.erb: the default index renders the header, then this %>
+<%= card title: "Posts" do %><%= @stats[:posts] %><% end %>
+```
+
+- Templates live in `app/views/admin/<route_key>/`. The route key comes from the class name
+  (`ReportsPage` is `reports`), or set it with `route :stats`.
+- Replace the whole page with `index.html.erb`. A GET `page_action` without a method renders `<name>.html.erb`.
+- In templates and the class: `page_path`, `action_path(:refresh)`, and `page_class`.
+- From elsewhere: `administratum.reports_page_path` and `administratum.refresh_reports_page_path`.
+- Pages have the same sign-in, layout, `before_action` and `helper` support as resources.
 
 ## JS islands
 

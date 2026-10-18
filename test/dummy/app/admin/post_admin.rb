@@ -3,6 +3,9 @@
 # Plain CRUD plus a custom write page with a JS island, export/import and buttons.
 class PostAdmin < Administratum::Resource
   filters :title, :published, :category_id
+  scope :all
+  scope(:live, label: "Published") { |posts| posts.where(published: true) }
+  scope :drafts, count: false
   index csv: true, sort: "created_at desc" do
     column :title
     column :category

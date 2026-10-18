@@ -10,6 +10,18 @@ module Administratum
     def draw(router)
       Administratum.registry.reset!
       Administratum.registry.top_level.each { |resource| draw_resource(router, resource) }
+      Administratum.registry.pages.each { |page| draw_page(router, page) }
+    end
+
+    # GET /<route_key> plus one route per page_action, named <route_key>_page
+    # and <action>_<route_key>_page.
+    def draw_page(router, page)
+      controller = "pages/#{page.controller_id}"
+      key = page.route_key
+      router.get key, to: "#{controller}#index", as: "#{key}_page"
+      page.definition.custom_actions.each_value do |action|
+        router.public_send(action.http_method, "#{key}/#{action.name}", to: "#{controller}##{action.name}", as: "#{action.name}_#{key}_page")
+      end
     end
 
     def draw_resource(router, resource, nested: false)
@@ -32,6 +44,14 @@ module Administratum
     def self.const_missing(name)
       id = name.to_s.delete_suffix("Controller").underscore
       Administratum.registry.find_by_controller_id(id) || super
+    end
+  end
+
+  # The same lookup for "administratum/pages/<controller_id>".
+  module Pages
+    def self.const_missing(name)
+      id = name.to_s.delete_suffix("Controller").underscore
+      Administratum.registry.find_page_by_controller_id(id) || super
     end
   end
 end

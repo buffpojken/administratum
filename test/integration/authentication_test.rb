@@ -14,6 +14,12 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     assert_redirected_to administratum.posts_path
   end
 
+  test "remember me sets a remember cookie" do
+    post administratum.sign_in_path, params: { email: "admin@example.com", password: "password123", remember_me: "1" }
+    assert_redirected_to administratum.root_path
+    assert cookies["remember_administratum_user_token"].present?
+  end
+
   test "rejects a wrong password" do
     post administratum.sign_in_path, params: { email: "admin@example.com", password: "nope" }
     assert_response :unprocessable_content
