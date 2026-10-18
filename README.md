@@ -18,9 +18,30 @@ Requires Rails 8 and Propshaft.
 
 ## Install
 
+Administratum is a private gem, hosted on AWS CodeArtifact (domain `greyseal`, repo `gems`, eu-north-1).
+Scope the source to this gem only, so all other gems still come from rubygems.org:
+
 ```ruby
 # Gemfile
-gem "administratum"
+source "https://greyseal-791515923336.d.codeartifact.eu-north-1.amazonaws.com/ruby/gems/" do
+  gem "administratum", "~> 0.1"
+end
+```
+
+Bundler needs a CodeArtifact token, which lasts at most 12 hours. On your own machine, run
+[`bin/codeartifact-login`](bin/codeartifact-login) from this repo (alias it, or copy it to your PATH).
+It stores the token in `~/.bundle/config`, so one run covers every project. The script uses the
+`buffpojken-cli` AWS profile. Point it at a different one with `CODEARTIFACT_PROFILE=...`. Root
+credentials don't work, because AWS doesn't let root fetch CodeArtifact tokens.
+
+In CI or Docker, use an IAM identity with `codeartifact:GetAuthorizationToken`,
+`codeartifact:ReadFromRepository` and `sts:GetServiceBearerToken`, and pass the token as an env var:
+
+```sh
+export BUNDLE_GREYSEAL__791515923336__D__CODEARTIFACT__EU__NORTH__1__AMAZONAWS__COM="aws:$(aws codeartifact \
+  get-authorization-token --domain greyseal --domain-owner 791515923336 --region eu-north-1 \
+  --query authorizationToken --output text)"
+bundle install
 ```
 
 ```sh
@@ -317,3 +338,14 @@ The dummy app in `test/dummy` exercises each extension point:
 - custom field type, write page with an island, and export/import (posts)
 - shallow nesting (comments) and non-shallow nesting (attachments)
 - custom index template (categories) and custom form partial (tags)
+
+## Releasing
+
+Releases go to CodeArtifact. `allowed_push_host` in the gemspec blocks pushes to rubygems.org.
+
+1. Bump `Administratum::VERSION` in `lib/administratum/version.rb`, then commit.
+2. `bundle exec rake codeartifact:release`
+
+That builds `pkg/administratum-X.Y.Z.gem`, tags `vX.Y.Z`, pushes the tag to origin and pushes the
+gem. The working tree must be clean. Run `bundle exec rake codeartifact:versions` to see what's published.
+Host apps pick up the new version with `bundle update administratum`.

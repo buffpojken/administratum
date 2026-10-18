@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+# Gives Bundler a fresh token (valid for 12h) for the private greyseal gem repository.
+# Writes to ~/.bundle/config, so one run covers every project on this machine.
+set -e
+
+DOMAIN=greyseal
+OWNER=791515923336
+REGION=eu-north-1
+# Root can't get CodeArtifact tokens, so use an IAM user's profile.
+PROFILE="${CODEARTIFACT_PROFILE:-buffpojken-cli}"
+HOST="$DOMAIN-$OWNER.d.codeartifact.$REGION.amazonaws.com"
+
+TOKEN=$(aws codeartifact get-authorization-token --domain "$DOMAIN" --domain-owner "$OWNER" \
+  --region "$REGION" --profile "$PROFILE" --query authorizationToken --output text)
+
+bundle config set --global "$HOST" "aws:$TOKEN"
+echo "Bundler is authenticated against $HOST for 12 hours."
