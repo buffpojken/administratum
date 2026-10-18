@@ -38,7 +38,7 @@ In CI or Docker, use an IAM identity with `codeartifact:GetAuthorizationToken`,
 `codeartifact:ReadFromRepository` and `sts:GetServiceBearerToken`, and pass the token as an env var:
 
 ```sh
-export BUNDLE_GREYSEAL__791515923336__D__CODEARTIFACT__EU__NORTH__1__AMAZONAWS__COM="aws:$(aws codeartifact \
+export BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM="aws:$(aws codeartifact \
   get-authorization-token --domain greyseal --domain-owner 791515923336 --region eu-north-1 \
   --query authorizationToken --output text)"
 bundle install
