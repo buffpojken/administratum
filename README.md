@@ -19,31 +19,90 @@ Requires Rails 8, with Propshaft or Sprockets. With Sprockets, add `//= link adm
 
 ## Install
 
-Administratum is a private gem, hosted on AWS CodeArtifact (domain `greyseal`, repo `gems`, eu-north-1).
+Administratum is a private gem, hosted on AWS CodeArtifact: domain `greyseal`, owner account
+`791515923336`, region `eu-north-1`, repository `gems`.
+
+### Gemfile
+
 Scope the source to this gem only, so all other gems still come from rubygems.org:
 
 ```ruby
-# Gemfile
 source "https://greyseal-791515923336.d.codeartifact.eu-north-1.amazonaws.com/ruby/gems/" do
-  gem "administratum", "~> 0.1"
+  gem "administratum", "~> 0.2"
 end
 ```
 
-Bundler needs a CodeArtifact token, which lasts at most 12 hours. On your own machine, run
-[`bin/codeartifact-login`](bin/codeartifact-login) from this repo (alias it, or copy it to your PATH).
-It stores the token in `~/.bundle/config`, so one run covers every project. The script uses the
-`buffpojken-cli` AWS profile. Point it at a different one with `CODEARTIFACT_PROFILE=...`. Root
-credentials don't work, because AWS doesn't let root fetch CodeArtifact tokens.
+### Authenticating Bundler
 
-In CI or Docker, use an IAM identity with `codeartifact:GetAuthorizationToken`,
-`codeartifact:ReadFromRepository` and `sts:GetServiceBearerToken`, and pass the token as an env var:
+Bundler reads a CodeArtifact token from this env var (Bundler turns `-` into `___` and `.` into `__`):
+
+```
+BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM="aws:<token>"
+```
+
+[`bin/codeartifact-env`](bin/codeartifact-env) sets it. Copy it to `~/codeartifact-env.sh` once,
+then before `bundle install` (or a deploy) run:
+
+```sh
+source ~/codeartifact-env.sh buffpojken-cli    # any AWS profile with access to the repo
+```
+
+- It exports the variable above and `CODEARTIFACT_AUTH_TOKEN` into your shell.
+- Tokens last at most 12 hours. When Bundler starts answering 401, source it again.
+- The profile must be an IAM user or role. AWS refuses CodeArtifact tokens to the root account.
+- The identity needs `codeartifact:GetAuthorizationToken`, `codeartifact:ReadFromRepository` and
+  `sts:GetServiceBearerToken`.
+
+Without the script:
 
 ```sh
 export BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM="aws:$(aws codeartifact \
   get-authorization-token --domain greyseal --domain-owner 791515923336 --region eu-north-1 \
-  --query authorizationToken --output text)"
-bundle install
+  --profile buffpojken-cli --query authorizationToken --output text)"
 ```
+
+### Docker and Kamal
+
+Pass the token as a BuildKit build secret, not a build arg (build args stay in the image history):
+
+```yaml
+# config/deploy.yml
+builder:
+  secrets:
+    - BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM
+```
+
+```sh
+# .kamal/secrets: reads the value from your shell, so nothing secret is committed
+BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM=$BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM
+```
+
+```dockerfile
+# Dockerfile (needs `# syntax=docker/dockerfile:1` at the top, as Rails 8 Dockerfiles have)
+RUN --mount=type=secret,id=BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM,env=BUNDLE_GREYSEAL___791515923336__D__CODEARTIFACT__EU___NORTH___1__AMAZONAWS__COM \
+    bundle install && ...
+```
+
+Then deploy with:
+
+```sh
+source ~/codeartifact-env.sh buffpojken-cli && kamal deploy
+```
+
+The secret is only mounted while `bundle install` runs, so it doesn't end up in the image. A plain
+Docker build works the same way: `docker build --secret id=BUNDLE_GREYSEAL___…,env=BUNDLE_GREYSEAL___… .`.
+CI that runs `bundle install` needs the same variable, ideally from a read-only IAM identity.
+
+### Switching from a git source
+
+If an app used `gem "administratum", git: ...`:
+
+- Replace that line with the source block above and run `bundle update administratum`.
+- Unset `bundle config local.administratum` (add `--global` if it was set there). It only applies to git sources.
+- Drop the deploy key, SSH mount and `ssh-keyscan github.com` from the Docker build, unless other gems still need them.
+- To work against a local checkout, temporarily use `gem "administratum", path: "../administratum"`. Don't commit it.
+
+### Setting up an app
 
 ```sh
 bin/rails g administratum:install          # initializer, migration, app/admin, mount at /administratum
@@ -427,9 +486,12 @@ The dummy app in `test/dummy` exercises each extension point:
 
 Releases go to CodeArtifact. `allowed_push_host` in the gemspec blocks pushes to rubygems.org.
 
-1. Bump `Administratum::VERSION` in `lib/administratum/version.rb`, then commit.
+1. Bump `Administratum::VERSION` in `lib/administratum/version.rb`, run `bundle install` to update
+   `Gemfile.lock`, and commit.
 2. `bundle exec rake codeartifact:release`
 
 That builds `pkg/administratum-X.Y.Z.gem`, tags `vX.Y.Z`, pushes the tag to origin and pushes the
-gem. The working tree must be clean. Run `bundle exec rake codeartifact:versions` to see what's published.
+gem. The working tree must be clean. It then checks the version actually landed on CodeArtifact,
+because `gem push` exits 0 even when the server rejects the upload. The task uses the
+`buffpojken-cli` AWS profile; set `CODEARTIFACT_PROFILE=...` for another one. Run `bundle exec rake codeartifact:versions` to see what's published.
 Host apps pick up the new version with `bundle update administratum`.
