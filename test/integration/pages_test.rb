@@ -15,6 +15,11 @@ class PagesTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", administratum.weekly_reports_page_path, text: "Weekly"
   end
 
+  test "pages can paginate with pagy" do
+    get administratum.reports_page_path, params: { page: 2 }
+    assert_select "#post-page", text: /items 2-2 of 2/
+  end
+
   test "is in the navigation by priority, and marked active" do
     get administratum.reports_page_path
     labels = css_select(".adm-nav-link").map { |link| link.text.strip }

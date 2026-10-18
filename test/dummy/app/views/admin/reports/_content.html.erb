@@ -1,3 +1,4 @@
 <%= card title: "Posts" do %>
   <p id="post-count"><%= @post_count %></p>
+  <p id="post-page"><%= @posts.map(&:title).join %> <%== pagy_info(@pagy) %></p>
 <% end %>

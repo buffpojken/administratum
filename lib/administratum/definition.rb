@@ -17,7 +17,8 @@ module Administratum
       def hint = options[:hint]
     end
 
-    Column = Struct.new(:name, :declared_type, :label, :declared_sortable, :block, :definition, keyword_init: true) do
+    Column = Struct.new(:name, :declared_type, :label, :declared_sortable, :block, :condition, :definition,
+                        keyword_init: true) do
       def model = definition.model
 
       def type
@@ -258,8 +259,8 @@ module Administratum
         index_scopes.find(&:default) || index_scopes.first
     end
 
-    def add_show_attribute(name, as: nil, label: nil, &)
-      show_attributes << build_column(name, as:, label:, sortable: false, &)
+    def add_show_attribute(name, as: nil, label: nil, condition: nil, &)
+      show_attributes << build_column(name, as:, label:, sortable: false, &).tap { |column| column.condition = condition }
     end
 
     def resolved_show_attributes

@@ -124,6 +124,13 @@ module Administratum
       tag.nav(safe_join(tabs), class: "adm-tabs", "aria-label": t("administratum.scope_tabs"))
     end
 
+    # Runs an `if:` lambda in the view, passing the record when it takes an argument.
+    def condition_met?(condition, record)
+      return true unless condition
+
+      condition.arity.zero? ? instance_exec(&condition) : instance_exec(record, &condition)
+    end
+
     def filters?
       definition.filters.any? && @search
     end
@@ -163,10 +170,7 @@ module Administratum
     end
 
     def button_visible?(button, record)
-      return true unless button.condition
-
-      condition = button.condition
-      condition.arity.zero? ? instance_exec(&condition) : instance_exec(record, &condition)
+      condition_met?(button.condition, record)
     end
 
     def button_target(button, record)

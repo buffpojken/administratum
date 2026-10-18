@@ -12,6 +12,7 @@ class ReportsPage < Administratum::Page
 
   def index
     @post_count = Post.count
+    @pagy, @posts = pagy(Post.order(:id), limit: 1)
   end
 
   def refresh

@@ -63,8 +63,9 @@ module Administratum
         @definition = definition
       end
 
-      def attribute(name, as: nil, label: nil, &)
-        @definition.add_show_attribute(name, as:, label:, &)
+      # `if:` takes a lambda, run in the view, that receives the record when it takes an argument.
+      def attribute(name, as: nil, label: nil, if: nil, &)
+        @definition.add_show_attribute(name, as:, label:, condition: binding.local_variable_get(:if), &)
       end
     end
 

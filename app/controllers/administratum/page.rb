@@ -7,6 +7,7 @@ module Administratum
   # first; the default index renders the page header and a `_content` partial.
   class Page < ApplicationController
     extend Administratum::PageDSL
+    include Pagy::Backend
 
     helper_method :definition, :page_class, :page_path, :action_path
 

@@ -100,6 +100,7 @@ class PostAdmin < Administratum::Resource
   show do                           # default: id, form fields, timestamps
     attribute :title
     attribute(:words) { |post| post.body.to_s.split.size }
+    attribute :published_at, if: ->(post) { post.published? }   # row hidden otherwise
   end
 
   permit :title, :body, :published, :category_id, tag_ids: []   # default: the form fields
@@ -115,6 +116,11 @@ by default). Everything you'd do in a controller works: `before_action`, `rescue
 `helper`, overriding `resource_params` or `scoped_collection`, and so on. In views, the
 current record is `@resource`, the index records are `@resources`, and the parent of a
 nested resource is `@parent`.
+
+For a namespaced model (`model ActsAsTaggableOn::Tag`), Rails derives the route key and form
+params from the full name: `/acts_as_taggable_on_tags` and `params[:acts_as_taggable_on_tag]`.
+Set `route :tags` for a shorter URL. The param key stays the same, so `permit` and
+`resource_params` work as usual.
 
 Resource files are loaded to draw routes, so the DSL never touches the database at
 class load. Types and defaults are resolved when a request is made.
@@ -324,6 +330,7 @@ end
 - In templates and the class: `page_path`, `action_path(:refresh)`, and `page_class`.
 - From elsewhere: `administratum.reports_page_path` and `administratum.refresh_reports_page_path`.
 - Pages have the same sign-in, layout, `before_action` and `helper` support as resources.
+- Pagy is included, so `@pagy, @rows = pagy(scope)` and `<%== pagy_nav(@pagy) %>` work on pages too.
 
 ## JS islands
 
