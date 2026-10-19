@@ -52,8 +52,8 @@ module Administratum
         @definition = definition
       end
 
-      def column(name, as: nil, label: nil, sortable: nil, &block)
-        @definition.add_column(name, as:, label:, sortable:, &block)
+      def column(name, as: nil, label: nil, sortable: nil, csv: true, &block)
+        @definition.add_column(name, as:, label:, sortable:, csv:, &block)
       end
     end
 

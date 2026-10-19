@@ -159,11 +159,23 @@ module Administratum
       parent_path || administratum.root_path
     end
 
+    # Block columns run in a view context, as on the index page, and HTML
+    # they return is exported as its text. Columns declared csv: false are left out.
     def index_csv(records)
-      columns = definition.index_columns.reject(&:block)
+      columns = definition.index_columns.select(&:csv)
+      view = view_context
       CSV.generate do |csv|
-        csv << columns.map { |column| model.human_attribute_name(column.name) }
-        records.find_each { |record| csv << columns.map { |column| record.public_send(column.name) } }
+        csv << columns.map { |column| view.column_label(column) }
+        records.find_each { |record| csv << columns.map { |column| csv_value(view, record, column) } }
+      end
+    end
+
+    def csv_value(view, record, column)
+      value = column.block ? view.instance_exec(record, &column.block) : record.public_send(column.name)
+
+      if value.is_a?(ActiveSupport::SafeBuffer) then Nokogiri::HTML5.fragment(value.to_s).text.strip
+      elsif value.is_a?(ActiveRecord::Base) then view.record_title(value)
+      else value
       end
     end
 

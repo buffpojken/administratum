@@ -145,6 +145,7 @@ class PostAdmin < Administratum::Resource
     column :category                # belongs_to: links to the record
     column :published               # booleans render as badges
     column(:comments, sortable: false) { |post| post.comments.size }   # runs in the view
+    column(:preview, csv: false) { |post| link_to "Preview", post }    # left out of the CSV
   end
 
   form do

@@ -11,6 +11,8 @@ class PostAdmin < Administratum::Resource
     column :category
     column :published
     column(:comments, sortable: false) { |post| post.comments.size }
+    column(:summary, sortable: false) { |post| tag.em(post.body) }
+    column(:quick_link, sortable: false, csv: false) { |post| link_to "Open", resource_path(post) }
   end
 
   form do

@@ -42,6 +42,16 @@ class CrudTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Hello world"
   end
 
+  test "csv exports block columns as text and skips csv: false columns" do
+    get administratum.posts_path(format: :csv)
+    rows = CSV.parse(response.body, headers: true)
+    assert_equal %w[Title Category Published Comments Summary], rows.headers
+    hello = rows.find { |row| row["Title"] == "Hello world" }
+    assert_equal "1", hello["Comments"]
+    assert_equal "First post", hello["Summary"]
+    assert_equal categories(:news).name, hello["Category"]
+  end
+
   test "creates with permitted params only" do
     assert_difference("Post.count") do
       post administratum.posts_path, params: { post: { title: "New", published: "1", tag_ids: [tags(:ruby).id], id: 999 } }

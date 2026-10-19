@@ -17,7 +17,7 @@ module Administratum
       def hint = options[:hint]
     end
 
-    Column = Struct.new(:name, :declared_type, :label, :declared_sortable, :block, :condition, :definition,
+    Column = Struct.new(:name, :declared_type, :label, :declared_sortable, :block, :condition, :csv, :definition,
                         keyword_init: true) do
       def model = definition.model
 
@@ -166,13 +166,14 @@ module Administratum
       [:id, title, :updated_at].compact.uniq.select { |name| model.column_names.include?(name.to_s) }.map { |name| build_column(name) }
     end
 
-    def add_column(name, as: nil, label: nil, sortable: nil, &)
+    def add_column(name, as: nil, label: nil, sortable: nil, csv: true, &)
       columns.reject! { |column| column.name == name.to_sym }
-      columns << build_column(name, as:, label:, sortable:, &)
+      columns << build_column(name, as:, label:, sortable:, csv:, &)
     end
 
-    def build_column(name, as: nil, label: nil, sortable: nil, &block)
-      Column.new(name: name.to_sym, declared_type: as&.to_sym, label:, declared_sortable: sortable, block:, definition: self)
+    def build_column(name, as: nil, label: nil, sortable: nil, csv: true, &block)
+      Column.new(name: name.to_sym, declared_type: as&.to_sym, label:, declared_sortable: sortable, block:, csv:,
+                 definition: self)
     end
 
     def add_field(name, as: nil, **options)
