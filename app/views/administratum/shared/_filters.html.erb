@@ -21,8 +21,8 @@
             <% when :date_range %>
               <span class="adm-label"><%= label %></span>
               <div class="adm-field-row">
-                <%= f.date_field filter.keys.first, class: "adm-input", "aria-label": t("administratum.filters.from", field: label) %>
-                <%= f.date_field filter.keys.last, class: "adm-input", "aria-label": t("administratum.filters.to", field: label) %>
+                <%= adm_date_field f, filter.keys.first, "aria-label": t("administratum.filters.from", field: label) %>
+                <%= adm_date_field f, filter.keys.last, "aria-label": t("administratum.filters.to", field: label) %>
               </div>
             <% when :number %>
               <%= f.label filter.keys.first, label, class: "adm-label" %>

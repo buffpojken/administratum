@@ -197,8 +197,8 @@ class load. Types and defaults are resolved when a request is made.
 | `multi_select` | Permitted as an array |
 | `belongs_to` | Inferred for `*_id` belongs_to columns |
 | `has_many_ids` | Inferred for `*_ids`; permitted as an array |
-| `date` | |
-| `datetime` | |
+| `date` | Text input for ISO dates (YYYY-MM-DD), whatever the browser locale |
+| `datetime` | Text input for YYYY-MM-DD HH:MM, parsed in the app time zone |
 | `email` | |
 | `password` | |
 | `hidden` | |
@@ -282,6 +282,7 @@ Helpers available in templates:
   <%= render_fields form, except: [:body] %>        <%# DSL fields %>
   <%= render_field form, :body %>                   <%# a single DSL field %>
   <%= render_field form, :notes, as: :textarea %>   <%# an ad-hoc field %>
+  <%= adm_date_field form, :ends_on %>              <%# ISO date input; also adm_datetime_field %>
   <%= form.submit class: "adm-btn adm-btn-primary" %>
 <% end %>
 ```

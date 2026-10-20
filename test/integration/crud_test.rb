@@ -31,6 +31,16 @@ class CrudTest < ActionDispatch::IntegrationTest
     assert_select "td", text: "Hello world", count: 0
   end
 
+  test "date range filters take ISO dates as text" do
+    get administratum.posts_path, params: { q: { created_at_gteq: "2000-01-01" } }
+    assert_select "input[type=text][name=?][value=?][placeholder=YYYY-MM-DD][inputmode=numeric]", "q[created_at_gteq]", "2000-01-01"
+    assert_select "input[type=text][name=?][pattern]", "q[created_at_lteq]"
+    assert_select "td", text: "Hello world"
+
+    get administratum.posts_path, params: { q: { created_at_lteq: "2000-01-01" } }
+    assert_select "td", text: "Hello world", count: 0
+  end
+
   test "index sorts" do
     get administratum.posts_path, params: { q: { s: "title asc" } }
     assert_match(/Draft thoughts.*Hello world/m, response.body)

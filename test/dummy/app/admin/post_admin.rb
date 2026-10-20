@@ -2,7 +2,7 @@
 
 # Plain CRUD plus a custom write page with a JS island, export/import and buttons.
 class PostAdmin < Administratum::Resource
-  filters :title, :published, :category_id
+  filters :title, :published, :category_id, :created_at
   scope :all
   scope(:live, label: "Published") { |posts| posts.where(published: true) }
   scope :drafts, count: false

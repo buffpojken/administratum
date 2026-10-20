@@ -73,6 +73,21 @@ module Administratum
       defaults.merge(field.options.fetch(:input_html, {}))
     end
 
+    # A text input that shows and accepts ISO 8601 dates (YYYY-MM-DD) in any
+    # browser locale, unlike the native date input. `value` defaults to the
+    # form object's attribute; options override the input's HTML attributes.
+    def adm_date_field(form, name, value: form.object.try(name), **options)
+      form.text_field name, { value: iso_value(value, "%Y-%m-%d"), placeholder: "YYYY-MM-DD",
+                              pattern: '\d{4}-\d{2}-\d{2}', inputmode: "numeric", class: "adm-input" }.merge(options)
+    end
+
+    # The same for datetimes (YYYY-MM-DD HH:MM). Rails parses the value in the
+    # app time zone on assignment.
+    def adm_datetime_field(form, name, value: form.object.try(name), **options)
+      form.text_field name, { value: iso_value(value, "%Y-%m-%d %H:%M"), placeholder: "YYYY-MM-DD HH:MM",
+                              pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}', class: "adm-input" }.merge(options)
+    end
+
     private
 
     def resolve_field(form, field, as:, options:)
@@ -89,6 +104,12 @@ module Administratum
       name = field.name.to_s.delete_suffix("_ids").delete_suffix("_id")
       reflection = record.class.reflect_on_association(name.to_sym) || record.class.reflect_on_association(name.pluralize.to_sym)
       reflection ? reflection.klass.all : []
+    end
+
+    # Dates and times are formatted; anything else (such as a submitted
+    # string that failed validation) is shown as typed.
+    def iso_value(value, format)
+      value.respond_to?(:strftime) ? value.strftime(format) : value
     end
   end
 end
