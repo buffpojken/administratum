@@ -17,6 +17,9 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby-3.3.5
+          # Ruby 3.3's bundled RubyGems activates the default securerandom when release-gem's
+          # attestation patch loads, clashing with the version in Gemfile.lock.
+          rubygems: latest
           bundler-cache: true
 
       - name: Release gem
