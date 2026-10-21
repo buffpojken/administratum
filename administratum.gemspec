@@ -13,8 +13,12 @@ Gem::Specification.new do |spec|
   spec.license     = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
-  # Private gem: `rake release` pushes here instead of rubygems.org. See rakelib/codeartifact.rake.
-  spec.metadata["allowed_push_host"] = "https://greyseal-791515923336.d.codeartifact.eu-north-1.amazonaws.com/ruby/gems"
+  spec.homepage = "https://github.com/buffpojken/administratum"
+
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "#{spec.homepage}/releases"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md", "DESIGN.md"]
