@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name        = "administratum"
   spec.version     = Administratum::VERSION
   spec.authors     = ["buffpojken"]
-  spec.email       = ["daniel@monkeydancers.com"]
+  spec.email       = ["daniel@sykewarrior.com"]
   spec.summary     = "A file-per-resource admin engine for Rails with a DSL, template overrides and JS islands."
   spec.description = "Declare adminable resources in app/admin, get a Tailwind v4 CRUD UI with Devise login, " \
                      "custom fields, nested resources, custom actions and framework-agnostic JS islands."
