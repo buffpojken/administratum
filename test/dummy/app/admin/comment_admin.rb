@@ -4,6 +4,7 @@
 class CommentAdmin < Administratum::Resource
   parent :post, shallow: true
   title :body
+  reorderable
   index { column :author; column :body }
   form do
     field :author

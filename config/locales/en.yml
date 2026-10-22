@@ -21,6 +21,7 @@ en:
       created: "%{resource} was created."
       updated: "%{resource} was updated."
       destroyed: "%{resource} was deleted."
+      reordered: "%{resources} were reordered."
     errors:
       title:
         one: 1 error prevented saving
@@ -33,6 +34,19 @@ en:
       any: Any
       from: "%{field} from"
       to: "%{field} to"
+    combobox:
+      empty: No matches
+      loading: Searching…
+      short: Type at least %{count} characters
+      error: Search failed
+    reorder:
+      handle: Reorder (drag, or use the arrow keys)
+      up: Move up
+      down: Move down
+      position: Position
+      moved: Moved to position %{position} of %{count}
+      save: Save order
+      column: Order
     upload:
       file: File
       submit: Upload

@@ -1,1 +1,2 @@
-<%= form.select field.name, field_collection(field, resource), { include_blank: field.options[:placeholder] || field.options.fetch(:include_blank, false) }, **input_options(field, form:, class: "adm-input") %>
+<% search = field_search(field, resource) %>
+<%= form.select field.name, select_field_choices(field, resource, search), { include_blank: field.options[:placeholder] || field.options.fetch(:include_blank, false) }, **input_options(field, form:, class: "adm-input", data: search ? adm_combobox_data(**search) : {}) %>

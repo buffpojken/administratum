@@ -15,7 +15,7 @@ module Administratum
 
     helper_method :definition, :resource_class, :paths, :paths_for, :parent_record, :collection_path, :new_resource_path,
                   :resource_path, :edit_resource_path, :action_path, :resource_form_path, :parent_path, :current_index_scope,
-                  :index_scope_count
+                  :index_scope_count, :index_reorderable?
 
     def index
       collection = current_index_scope ? current_index_scope.apply(scoped_collection) : scoped_collection
@@ -57,6 +57,15 @@ module Administratum
     def destroy
       @resource.destroy!
       redirect_to after_destroy_path, notice: t("administratum.flash.destroyed", resource: resource_class.singular_label)
+    end
+
+    # PATCH positions[id]=n, for resources declared `reorderable`.
+    def reorder
+      reorder_records!(scoped_collection, params.fetch(:positions, {}))
+      respond_to do |format|
+        format.html { redirect_back_or_to after_destroy_path, notice: t("administratum.flash.reordered", resources: resource_class.plural_label) }
+        format.json { head :no_content }
+      end
     end
 
     # Resources defined in the host app live outside the engine's namespace,
@@ -111,6 +120,20 @@ module Administratum
     # Records in a tab, with the current filters applied.
     def index_scope_count(index_scope)
       index_scope.apply(scoped_collection).ransack(params[:q], auth_object: :administratum).result.count
+    end
+
+    # Reorder controls show on the index while it lists every record, sorted by the position column.
+    def index_reorderable?
+      column = definition.reorder_column
+      return false unless column && @pagy && @search
+
+      @search.sorts.map { |sort| [sort.name, sort.dir] } == [[column.to_s, "asc"]] &&
+        @pagy.count > 1 && @pagy.pages == 1 && @pagy.count == scoped_collection.count
+    end
+
+    # Renumbers `relation` from a positions[id]=n payload. See Administratum::Reorder.
+    def reorder_records!(relation, positions, column: definition.reorder_column || :position)
+      Administratum::Reorder.call(relation, positions, column:)
     end
 
     def build_resource(attributes = {})

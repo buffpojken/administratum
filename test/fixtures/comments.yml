@@ -2,3 +2,22 @@ first:
   post: hello
   author: Ada
   body: Nice post
+  position: 1
+
+second:
+  post: hello
+  author: Grace
+  body: Agreed
+  position: 2
+
+third:
+  post: hello
+  author: Linus
+  body: Ship it
+  position: 3
+
+elsewhere:
+  post: draft
+  author: Ada
+  body: Not this one
+  position: 1

@@ -123,9 +123,9 @@ class load. Types and defaults are resolved when a request is made.
 | `textarea` | `rows:` |
 | `number` | `step:`, `min:`, `max:` |
 | `boolean` | |
-| `select` | `collection:` takes an array, a relation, or a lambda (optionally receiving the record); `include_blank:` |
+| `select` | `collection:` takes an array, a relation, or a lambda (optionally receiving the record); `include_blank:`; `group_by:`; `searchable:` (see below) |
 | `multi_select` | Permitted as an array |
-| `belongs_to` | Inferred for `*_id` belongs_to columns |
+| `belongs_to` | Inferred for `*_id` belongs_to columns; takes the same options as `select` |
 | `has_many_ids` | Inferred for `*_ids`; permitted as an array |
 | `date` | Text input for ISO dates (YYYY-MM-DD), whatever the browser locale |
 | `datetime` | Text input for YYYY-MM-DD HH:MM, parsed in the app time zone |
@@ -144,6 +144,34 @@ Every field also takes these options:
 | `placeholder:` | Placeholder text. On selects it becomes the blank option's text. |
 | `required:` | Shows or hides the required marker. Defaults to whether the model validates presence. |
 | `input_html: {}` | Extra HTML attributes on the input. |
+
+#### Long lists: grouping and search
+
+`group_by:` sorts a select's options into `<optgroup>`s. It takes an attribute name or a lambda receiving each item:
+
+```ruby
+field :task_template_id, collection: -> { TaskTemplate.includes(:task_group).order(:task_group_id, :name) },
+                         group_by: :task_group                 # an association shows as its record title
+```
+
+`searchable: true` turns a `select` or `belongs_to` field into a type-to-filter input. Typing filters across option and
+group labels, ignoring case and accents. The arrow keys, Enter and Escape work as in a native select. Inside a side panel,
+Escape closes the list first, then the panel. The same param is submitted, and without JS it's a plain `<select>`.
+
+For lists too long to render, search on the server instead. The URL gets `?q=` and returns `[{ "id": 1, "label": "…", "group": "…" }]`
+(`group` is optional). Only the current value is rendered into the page. Without JS, the field can't be changed.
+
+```ruby
+field :task_template_id, searchable: { url: -> { paths_for(TaskTemplateAdmin).action(:search) }, min: 2 }
+```
+
+`url:` takes a string or a lambda (optionally receiving the record). `min:` is how many characters to type before
+searching (default 2). For a select you build yourself, for example in a panel partial, add the data attributes:
+
+```erb
+<%= f.select :task_template_id, grouped_choices, {}, class: "adm-input", data: adm_combobox_data %>
+<%= f.select :task_template_id, [], {}, class: "adm-input", data: adm_combobox_data(url: search_path, min: 3) %>
+```
 
 Custom field partials get the same wiring by building their attributes with `input_options(field, form:, class: "adm-input")`.
 
@@ -222,7 +250,8 @@ Path helpers:
 - `resource_form_path(record)`, `action_path(:write, record)`, `parent_path`
 - `paths_for(OtherAdmin).index`, for paths to another resource
 
-Layout helpers: `card(title:) { }`, `island`, `record_title`, `format_value`.
+Layout helpers: `card(title:) { }`, `island`, `record_title`, `format_value`. Reordering: `reorder_form`,
+`reorder_controls`, `reorder_save_button` (see below). Searchable selects: `adm_combobox_data`.
 
 ### Nested resources
 
@@ -283,6 +312,43 @@ Button options:
 Non-GET buttons render as small forms, so no rails-ujs is needed.
 
 A panel partial receives `resource:` and `button:`.
+
+### Ordering records
+
+```ruby
+class ChapterAdmin < Administratum::Resource
+  parent :fantasy
+  reorderable                    # integer column, :position by default
+end
+```
+
+`reorderable` adds `PATCH /fantasies/:fantasy_id/chapters/reorder`, which takes `positions[<id>]=<n>`. Only records in the
+resource's collection (here, the fantasy's chapters) move. Each submitted record goes to its number, and records left out keep
+their order around it. Positions are then renumbered from 1 with `update!`, so validations and callbacks run. A unique index on
+the position column would clash with the renumbering, and so can callbacks that renumber too (acts_as_list's, for example);
+in that case write your own action. HTML requests redirect back; JSON requests get `204 No Content`.
+
+The index sorts by the column and, while it lists every record (one page, no filters narrowing it), adds drag handles and
+move up/down buttons with a "Save order" button. Without JS, each row has a position number field instead.
+
+Anywhere else, such as cards on a parent's show page, use the helpers. The fields join the form through `form="…"`, so
+the list can hold its own forms (row buttons, for example):
+
+```erb
+<%= reorder_form id: "chapter-order", url: paths_for(ChapterAdmin).action(:reorder, @resource) %>
+<div data-adm-sortable>
+  <% @resource.chapters.order(:position).each do |chapter| %>
+    <div class="adm-card" data-adm-sortable-item>
+      <%= reorder_controls chapter, form: "chapter-order" %>   <%# column: :position, position: … %>
+      <%= chapter.title %>
+    </div>
+  <% end %>
+</div>
+<%= reorder_save_button form: "chapter-order" %>
+```
+
+The items must be direct children of the `data-adm-sortable` element. To use the renumbering in your own action, call
+`reorder_records!(relation, params[:positions], column: :position)` in a resource, or `Administratum::Reorder.call` anywhere.
 
 ## Pages
 

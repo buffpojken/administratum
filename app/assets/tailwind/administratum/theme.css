@@ -14,10 +14,12 @@
   --color-adm-muted: oklch(0.52 0.02 260);
   --color-adm-primary: oklch(0.52 0.18 262);
   --color-adm-primary-fg: oklch(0.99 0 0);
-  --color-adm-danger: oklch(0.56 0.2 25);
+  /* Status colours are used as text on their own 10% tint, so each keeps at
+     least 4.5:1 against it (and against the surface) in both themes. */
+  --color-adm-danger: oklch(0.54 0.2 25);
   --color-adm-danger-fg: oklch(0.99 0 0);
-  --color-adm-success: oklch(0.58 0.14 155);
-  --color-adm-warning: oklch(0.75 0.15 75);
+  --color-adm-success: oklch(0.52 0.14 155);
+  --color-adm-warning: oklch(0.52 0.13 70);
   --color-adm-ring: oklch(0.52 0.18 262 / 0.35);
   --color-adm-overlay: oklch(0.2 0.02 260 / 0.45);
 
@@ -41,6 +43,10 @@
     --color-adm-muted: oklch(0.7 0.015 260);
     --color-adm-primary: oklch(0.68 0.15 262);
     --color-adm-primary-fg: oklch(0.16 0.02 260);
+    --color-adm-danger: oklch(0.8 0.13 25);
+    --color-adm-danger-fg: oklch(0.16 0.02 260);
+    --color-adm-success: oklch(0.78 0.14 155);
+    --color-adm-warning: oklch(0.82 0.14 80);
     --color-adm-ring: oklch(0.68 0.15 262 / 0.4);
     --color-adm-overlay: oklch(0.05 0 0 / 0.6);
   }
@@ -55,6 +61,10 @@
       --color-adm-muted: oklch(0.7 0.015 260);
       --color-adm-primary: oklch(0.68 0.15 262);
       --color-adm-primary-fg: oklch(0.16 0.02 260);
+      --color-adm-danger: oklch(0.8 0.13 25);
+      --color-adm-danger-fg: oklch(0.16 0.02 260);
+      --color-adm-success: oklch(0.78 0.14 155);
+      --color-adm-warning: oklch(0.82 0.14 80);
       --color-adm-ring: oklch(0.68 0.15 262 / 0.4);
       --color-adm-overlay: oklch(0.05 0 0 / 0.6);
     }

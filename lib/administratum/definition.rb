@@ -101,7 +101,7 @@ module Administratum
     end
 
     attr_accessor :model, :title_attribute, :permitted, :parent, :form_template, :scope_block, :route_key, :label,
-                  :plural_label, :per_page, :default_sort, :csv
+                  :plural_label, :per_page, :default_sort, :csv, :reorder_column
     attr_reader :fields, :columns, :custom_actions, :buttons, :show_attributes, :enabled_actions, :menu, :index_scopes
 
     def initialize
@@ -206,6 +206,7 @@ module Administratum
       names = filters.map { |filter| filter.name.to_s }
       names += index_columns.select(&:sortable).map { |column| column.name.to_s }
       names << title.to_s if title
+      names << reorder_column.to_s if reorder_column
       names += Array(default_sort).map { |sort| sort.to_s.split.first }
       names.uniq & model.column_names
     end

@@ -57,7 +57,7 @@ class CrudTest < ActionDispatch::IntegrationTest
     rows = CSV.parse(response.body, headers: true)
     assert_equal %w[Title Category Published Comments Summary], rows.headers
     hello = rows.find { |row| row["Title"] == "Hello world" }
-    assert_equal "1", hello["Comments"]
+    assert_equal "3", hello["Comments"]
     assert_equal "First post", hello["Summary"]
     assert_equal categories(:news).name, hello["Category"]
   end

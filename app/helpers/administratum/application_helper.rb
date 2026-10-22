@@ -7,5 +7,6 @@ module Administratum
     include Administratum::FormHelper
     include Administratum::ResourceHelper
     include Administratum::IslandHelper
+    include Administratum::ReorderHelper
   end
 end

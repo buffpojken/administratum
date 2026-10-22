@@ -56,13 +56,52 @@ module Administratum
     end
 
     # Options for select-style fields. `collection` may be an array, a
-    # relation, or a lambda (optionally receiving the record).
+    # relation, or a lambda (optionally receiving the record). `group_by:` (an
+    # attribute name, or a lambda receiving each item) groups them into optgroups.
     def field_collection(field, record)
       collection = field.options[:collection]
       collection = collection.arity.zero? ? instance_exec(&collection) : instance_exec(record, &collection) if collection.respond_to?(:call)
       collection ||= association_collection(field, record)
       collection = collection.to_a if collection.is_a?(ActiveRecord::Relation)
-      collection.map { |item| item.is_a?(ActiveRecord::Base) ? [record_title(item), item.id] : item }
+      group_by = field.options[:group_by]
+      return collection.map { |item| collection_choice(item) } unless group_by
+
+      collection.group_by { |item| collection_group(group_by, item) }
+                .map { |group, items| [group, items.map { |item| collection_choice(item) }] }
+    end
+
+    # The `searchable:` option of a select field, resolved: nil, or a hash with
+    # the search `url:` (a string, or a lambda optionally receiving the record) and `min:`.
+    def field_search(field, record)
+      option = field.options[:searchable]
+      return unless option
+
+      option = {} if option == true
+      url = option[:url]
+      url = url.arity.zero? ? instance_exec(&url) : instance_exec(record, &url) if url.respond_to?(:call)
+      { url:, min: option[:min] }
+    end
+
+    # Choices for a select field. One that searches remotely only renders the
+    # current value; the rest come from the search URL.
+    def select_field_choices(field, record, search = field_search(field, record))
+      return field_collection(field, record) unless search&.dig(:url)
+
+      value = record.try(field.name)
+      return [] if value.blank?
+
+      reflection = field_reflection(field, record)
+      return [[value.to_s, value]] unless reflection
+
+      reflection.klass.where(reflection.klass.primary_key => value).map { |item| collection_choice(item) }
+    end
+
+    # Data attributes that make a select searchable (see administratum.js).
+    # Use them on hand-written selects too: `data: adm_combobox_data(url: …)`.
+    def adm_combobox_data(url: nil, min: nil)
+      { adm_combobox: true, adm_combobox_url: url, adm_combobox_min: min,
+        adm_combobox_empty: t("administratum.combobox.empty"), adm_combobox_loading: t("administratum.combobox.loading"),
+        adm_combobox_short: t("administratum.combobox.short"), adm_combobox_error: t("administratum.combobox.error") }.compact
     end
 
     # HTML options for a field's input: the partial's defaults, then the
@@ -101,9 +140,22 @@ module Administratum
     end
 
     def association_collection(field, record)
-      name = field.name.to_s.delete_suffix("_ids").delete_suffix("_id")
-      reflection = record.class.reflect_on_association(name.to_sym) || record.class.reflect_on_association(name.pluralize.to_sym)
+      reflection = field_reflection(field, record)
       reflection ? reflection.klass.all : []
+    end
+
+    def field_reflection(field, record)
+      name = field.name.to_s.delete_suffix("_ids").delete_suffix("_id")
+      record.class.reflect_on_association(name.to_sym) || record.class.reflect_on_association(name.pluralize.to_sym)
+    end
+
+    def collection_choice(item)
+      item.is_a?(ActiveRecord::Base) ? [record_title(item), item.id] : item
+    end
+
+    def collection_group(group_by, item)
+      group = group_by.respond_to?(:call) ? instance_exec(item, &group_by) : item.public_send(group_by)
+      group.is_a?(ActiveRecord::Base) ? record_title(group) : group.to_s
     end
 
     # Dates and times are formatted; anything else (such as a submitted

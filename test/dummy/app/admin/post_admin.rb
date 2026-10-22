@@ -19,7 +19,7 @@ class PostAdmin < Administratum::Resource
     field :title, hint: "Shown in listings", placeholder: "A catchy headline"
     field :body, as: :textarea, rows: 6
     field :published
-    field :category_id, placeholder: "Pick a category"
+    field :category_id, placeholder: "Pick a category", searchable: true
     field :tag_ids
     field :color, as: :color
     field :metadata, as: :json

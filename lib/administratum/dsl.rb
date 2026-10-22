@@ -152,6 +152,15 @@ module Administratum
       definition.enable_actions(only:, except:)
     end
 
+    # Records are put in order by an integer column. Adds a PATCH `reorder`
+    # collection action taking positions[id]=n, sorts the index by the column,
+    # and shows reorder controls there while every record is on the page.
+    def reorderable(column = :position)
+      definition.reorder_column = column.to_sym
+      definition.default_sort ||= "#{column} asc"
+      collection_action :reorder, method: :patch
+    end
+
     def member_action(name, method: :get)
       definition.add_action(name, http_method: method, scope: :member)
     end

@@ -1,17 +1,24 @@
+<% reorderable = index_reorderable? %>
 <section class="adm-card">
   <div class="adm-table-wrap">
     <table class="adm-table">
       <thead>
         <tr>
+          <% if reorderable %>
+            <th scope="col" class="w-px whitespace-nowrap"><%= t("administratum.reorder.column") %></th>
+          <% end %>
           <% definition.index_columns.each do |column| %>
             <th scope="col"><%= column.sortable ? sort_link(@search, column.name, column_label(column)) : column_label(column) %></th>
           <% end %>
           <th scope="col" class="adm-table-actions"><span class="adm-sr-only"><%= t("administratum.actions.title") %></span></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody<% if reorderable %> data-adm-sortable<% end %>>
         <% @resources.each do |record| %>
-          <tr>
+          <tr<% if reorderable %> data-adm-sortable-item<% end %>>
+            <% if reorderable %>
+              <td class="w-px whitespace-nowrap"><%= reorder_controls record, form: "adm-reorder", column: definition.reorder_column %></td>
+            <% end %>
             <% definition.index_columns.each_with_index do |column, index| %>
               <td>
                 <% if index.zero? && !column.block && definition.action_enabled?(:show) %>
@@ -25,7 +32,7 @@
           </tr>
         <% end %>
         <% if @resources.empty? %>
-          <tr><td colspan="<%= definition.index_columns.size + 1 %>" class="adm-empty"><%= t("administratum.empty", resources: resource_class.plural_label.downcase) %></td></tr>
+          <tr><td colspan="<%= definition.index_columns.size + (reorderable ? 2 : 1) %>" class="adm-empty"><%= t("administratum.empty", resources: resource_class.plural_label.downcase) %></td></tr>
         <% end %>
       </tbody>
     </table>
@@ -37,6 +44,12 @@
         · <%= link_to t("administratum.download_csv"), url_for(format: :csv, q: request.query_parameters[:q], scope: current_index_scope&.name), class: "adm-link" %>
       <% end %>
     </div>
+    <% if reorderable %>
+      <div class="adm-form-footer">
+        <%= reorder_form id: "adm-reorder", url: action_path(:reorder) %>
+        <%= reorder_save_button form: "adm-reorder", class: "adm-btn-sm" %>
+      </div>
+    <% end %>
     <div class="adm-pagy"><%== pagy_nav(@pagy) if @pagy.pages > 1 %></div>
   </footer>
 </section>
