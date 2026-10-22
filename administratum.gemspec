@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "csv"
   spec.add_dependency "devise", ">= 4.9"
-  spec.add_dependency "pagy", ">= 9.0", "< 10"
+  spec.add_dependency "pagy", ">= 9.0", "< 44"
   spec.add_dependency "rails", ">= 8.0"
   spec.add_dependency "ransack", ">= 4.0"
 end
