@@ -3,5 +3,7 @@
 <% end %>
 
 <div class="adm-container adm-page-body">
-  <%= render "attributes" %>
+  <%= with_asides(:show) do %>
+    <%= render "attributes" %>
+  <% end %>
 </div>

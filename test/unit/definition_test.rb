@@ -55,4 +55,19 @@ class DefinitionTest < ActiveSupport::TestCase
     definition.enable_actions(only: %i[index new])
     assert_equal %i[index new create], definition.enabled_actions
   end
+
+  test "aside buttons are kept apart from header buttons and copied to subclasses" do
+    aside = PostAdmin.definition.asides_for(:show).first
+    assert_equal %i[all_comments unpublish], aside.buttons.map(&:name)
+    assert_equal [:show], aside.buttons.first.pages
+    assert_not_includes PostAdmin.definition.buttons_for(:show).map(&:name), :unpublish
+
+    copy = PostAdmin.definition.dup
+    copy.asides.first.buttons << copy.build_button(:extra, on: :show)
+    assert_equal 2, aside.buttons.size
+  end
+
+  test "asides can't go on rows" do
+    assert_raises(Administratum::Error) { Administratum::Definition.new.add_aside(on: :row) }
+  end
 end

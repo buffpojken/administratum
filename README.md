@@ -250,7 +250,7 @@ Path helpers:
 - `resource_form_path(record)`, `action_path(:write, record)`, `parent_path`
 - `paths_for(OtherAdmin).index`, for paths to another resource
 
-Layout helpers: `card(title:) { }`, `island`, `record_title`, `format_value`. Reordering: `reorder_form`,
+Layout helpers: `card(title:) { }`, `with_asides(page) { }`, `island`, `record_title`, `format_value`. Reordering: `reorder_form`,
 `reorder_controls`, `reorder_save_button` (see below). Searchable selects: `adm_combobox_data`.
 
 ### Nested resources
@@ -312,6 +312,30 @@ Button options:
 Non-GET buttons render as small forms, so no rails-ujs is needed.
 
 A panel partial receives `resource:` and `button:`.
+
+#### Asides
+
+When a page has more actions than fit in the header, move the minor ones into an aside: a menu in a
+column beside the content (below it on narrow screens).
+
+```ruby
+class PostAdmin < Administratum::Resource
+  button :write, on: :show, style: :primary          # stays in the header
+
+  aside on: :show, title: "Maintenance" do           # title defaults to "Actions"
+    button :reindex
+    button :history, to: ->(post) { post_versions_path(post) }
+    button :purge, style: :danger, confirm: "Purge?", if: ->(post) { post.archived? }
+  end
+end
+```
+
+- `on:` takes `:index`, `:show`, `:new` or `:edit`, or several of them. A page can have more than one aside.
+- Buttons inside take the same options as `button`, except `on:`. They render as menu items, and `style:` only
+  colours them (`:primary` and `:danger`).
+- An aside whose buttons are all hidden by `if:` isn't rendered, and the page keeps its full width.
+- In your own templates, wrap the content in `<%= with_asides(:show) do %> … <% end %>`, or render just the
+  menus with `asides_for(:show)`.
 
 ### Ordering records
 

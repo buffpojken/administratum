@@ -9,6 +9,13 @@ module Administratum
       ghost: "adm-btn adm-btn-ghost"
     }.freeze
 
+    MENU_STYLES = {
+      primary: "adm-menu-item adm-menu-item-primary",
+      secondary: "adm-menu-item",
+      danger: "adm-menu-item adm-menu-item-danger",
+      ghost: "adm-menu-item"
+    }.freeze
+
     # The display name of any record: its resource's title attribute, else to_s.
     def record_title(record)
       return "" if record.nil?
@@ -86,26 +93,47 @@ module Administratum
       safe_join(buttons, " ")
     end
 
-    def render_button(button, record = @resource)
+    # `menu: true` renders it as an item of an aside menu instead of a button.
+    def render_button(button, record = @resource, menu: false)
       return unless button_visible?(button, record)
 
       label = button.label || t("administratum.actions.#{button.name}", default: button.name.to_s.humanize)
-      classes = BUTTON_STYLES.fetch(button.style, BUTTON_STYLES[:secondary])
+      styles = menu ? MENU_STYLES : BUTTON_STYLES
+      classes = styles.fetch(button.style, styles[:secondary])
 
       return panel_button(button, label, classes, record) if button.panel || button.upload
 
       url, http_method = button_target(button, record)
-      administratum_button(label, url, method: http_method, confirm: button.confirm, class: classes)
+      administratum_button(label, url, method: http_method, confirm: button.confirm, class: classes,
+                                       form_class: (menu ? "adm-menu-form" : "adm-inline-form"))
     end
 
     # A link for GET, otherwise a one-button form (no rails-ujs needed).
-    def administratum_button(label, url, method: :get, confirm: nil, **options)
+    def administratum_button(label, url, method: :get, confirm: nil, form_class: "adm-inline-form", **options)
       if method.to_sym == :get
         link_to label, url, **options
       else
         form = { data: confirm ? { adm_confirm: confirm } : {} }
-        button_to label, url, method:, form:, form_class: "adm-inline-form", **options
+        button_to label, url, method:, form:, form_class:, **options
       end
+    end
+
+    # Lays the block out beside the page's asides, or returns it as is when the
+    # page has none (or every button in them is hidden by `if:`).
+    def with_asides(page, record = @resource, &)
+      content = capture(&)
+      asides = asides_for(page, record)
+      return content if asides.blank?
+
+      tag.div(class: "adm-with-aside") do
+        tag.div(content, class: "adm-with-aside-main") + tag.aside(asides, class: "adm-aside")
+      end
+    end
+
+    # The aside menus for a page, without the surrounding layout.
+    def asides_for(page, record = @resource)
+      menus = definition.asides_for(page).filter_map { |aside| render_aside(aside, record) }
+      safe_join(menus) if menus.any?
     end
 
     # Tabs for the resource's index scopes. Switching tab keeps filters and sorting
@@ -167,6 +195,17 @@ module Administratum
       administratum_button(t("administratum.actions.destroy"), resource_path(record), method: :delete,
                                                                                       confirm: t("administratum.confirm"),
                                                                                       class: class_names("adm-btn adm-btn-danger", "adm-btn-sm" => small))
+    end
+
+    def render_aside(aside, record)
+      items = aside.buttons.filter_map { |button| render_button(button, record, menu: true) }
+      return if items.empty?
+
+      title = aside.title || t("administratum.actions.title")
+      tag.nav(class: "adm-card", "aria-label": title) do
+        tag.header(tag.h2(title, class: "adm-card-title"), class: "adm-card-header") +
+          tag.ul(safe_join(items.map { |item| tag.li(item) }), class: "adm-menu")
+      end
     end
 
     def button_visible?(button, record)

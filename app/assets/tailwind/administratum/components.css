@@ -81,6 +81,18 @@
   .adm-icon { @apply size-5; }
   .adm-link { @apply font-medium text-adm-primary no-underline hover:underline; }
 
+  /* Aside menus (`aside` DSL): content beside a column of menu cards. */
+  .adm-with-aside { @apply grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]; }
+  .adm-with-aside-main { @apply flex min-w-0 flex-col gap-6; }
+  .adm-aside { @apply flex flex-col gap-6; }
+  .adm-menu { @apply py-1; }
+  .adm-menu-form { @apply block; }
+  .adm-menu-item {
+    @apply block w-full cursor-pointer px-5 py-2 text-left text-adm-text no-underline transition-colors hover:bg-adm-surface-muted focus-visible:bg-adm-surface-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-adm-ring focus-visible:ring-inset;
+  }
+  .adm-menu-item-primary { @apply font-medium text-adm-primary; }
+  .adm-menu-item-danger { @apply text-adm-danger hover:bg-adm-danger/10; }
+
   /* Tables ---------------------------------------------------------------- */
   .adm-table-wrap { @apply overflow-x-auto; }
   .adm-table { @apply w-full border-collapse text-left; }

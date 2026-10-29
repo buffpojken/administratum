@@ -28,6 +28,7 @@ class PostAdmin < Administratum::Resource
   member_action :write
   member_action :save_body, method: :patch
   member_action :publish, method: :post
+  member_action :unpublish, method: :post
   collection_action :export
   collection_action :import, method: :post
 
@@ -36,6 +37,15 @@ class PostAdmin < Administratum::Resource
   button :comments, on: :show, to: ->(post) { post_comments_path(post) }
   button :export, on: :index
   button :import, on: :index, upload: ".json"
+
+  aside on: :show, title: "Maintenance" do
+    button :all_comments, to: ->(post) { post_comments_path(post) }
+    button :unpublish, style: :danger, confirm: "Unpublish this post?", if: ->(post) { post.published? }
+  end
+
+  aside on: :index do
+    button :export, label: "Export JSON"
+  end
 
   menu priority: 10
 
@@ -47,6 +57,11 @@ class PostAdmin < Administratum::Resource
   def publish
     @resource.update!(published: true)
     redirect_to resource_path, notice: "Published"
+  end
+
+  def unpublish
+    @resource.update!(published: false)
+    redirect_to resource_path, notice: "Unpublished"
   end
 
   def export

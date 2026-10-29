@@ -35,6 +35,21 @@ module Administratum
 
     include Common
 
+    # Builds `aside do ... end` button lists. Buttons take the same options as
+    # `button`, except `on:`, which comes from the aside.
+    class AsideBuilder
+      def initialize(definition, aside)
+        @definition = definition
+        @aside = aside
+      end
+
+      def button(name, label: nil, action: nil, to: nil, method: nil, confirm: nil, if: nil, style: :secondary, panel: nil,
+                 upload: false)
+        @aside.buttons << @definition.build_button(name, on: @aside.pages, label:, action:, to:, method:, confirm:,
+                                                         condition: binding.local_variable_get(:if), style:, panel:, upload:)
+      end
+    end
+
     # Builds `form do ... end` field lists.
     class FormBuilder
       def initialize(definition)
@@ -122,6 +137,12 @@ module Administratum
 
     def show(&)
       ShowBuilder.new(definition).instance_eval(&)
+    end
+
+    # A menu of buttons beside the content of :index, :show, :new or :edit,
+    # for actions too minor for the page header. `title:` defaults to "Actions".
+    def aside(on:, title: nil, &)
+      AsideBuilder.new(definition, definition.add_aside(on:, title:)).instance_eval(&)
     end
 
     # Strong-params style list of writable attributes. Defaults to the form fields.

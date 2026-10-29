@@ -6,8 +6,10 @@
 <% end %>
 
 <div class="adm-container adm-page-body">
-  <%= index_scope_tabs %>
-  <%= render "table" %>
+  <%= with_asides(:index, nil) do %>
+    <%= index_scope_tabs %>
+    <%= render "table" %>
+  <% end %>
 </div>
 
 <% if filters? %>

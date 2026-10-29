@@ -51,6 +51,7 @@ Overrides, in order of precedence:
 | Buttons | `adm-btn` plus one of `adm-btn-primary`, `-secondary`, `-danger`, `-ghost`; sizes `adm-btn-sm`, `adm-btn-block`; `adm-btn-group`, `adm-icon-btn`, `adm-link` |
 | Tables | `adm-table-wrap`, `adm-table`, `adm-table-actions`, `adm-table-footer`, `adm-empty`, `adm-pagy` |
 | Show page | `adm-attributes`, `adm-attribute` |
+| Aside menus | `adm-with-aside`, `adm-with-aside-main`, `adm-aside`, `adm-menu`, `adm-menu-form`, `adm-menu-item`, `adm-menu-item-primary`, `adm-menu-item-danger` (rendered by `with_asides`) |
 | Forms | `adm-form`, `adm-field`, `adm-field-horizontal`, `adm-field-control`, `adm-label`, `adm-input`, `adm-checkbox`, `adm-check`, `adm-hint`, `adm-error`, `adm-form-footer` |
 | Feedback | `adm-alert` (see below), `adm-badge` (see below), `adm-flash`, `adm-flash-notice`, `adm-flash-alert` |
 | Searchable select | `adm-combobox`, `adm-combobox-input`, `adm-combobox-listbox`, `adm-combobox-group`, `adm-combobox-option`, `adm-combobox-option-active`, `adm-combobox-empty` (built by `administratum.js`) |

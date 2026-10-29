@@ -3,5 +3,7 @@
 <% end %>
 
 <div class="adm-container adm-page-body">
-  <%= render definition.form_template || "form" %>
+  <%= with_asides(:new) do %>
+    <%= render definition.form_template || "form" %>
+  <% end %>
 </div>

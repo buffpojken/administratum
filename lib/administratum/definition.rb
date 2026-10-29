@@ -87,6 +87,9 @@ module Administratum
     Button = Struct.new(:name, :label, :pages, :action, :to, :http_method, :confirm, :condition, :style, :panel, :upload,
                         keyword_init: true)
 
+    # A side menu of buttons beside a page's content, for actions that don't belong in the header.
+    Aside = Struct.new(:pages, :title, :buttons, keyword_init: true)
+
     Parent = Struct.new(:name, :class_name, :shallow, :association, keyword_init: true) do
       def model = class_name.constantize
       def param = :"#{name}_id"
@@ -102,7 +105,8 @@ module Administratum
 
     attr_accessor :model, :title_attribute, :permitted, :parent, :form_template, :scope_block, :route_key, :label,
                   :plural_label, :per_page, :default_sort, :csv, :reorder_column
-    attr_reader :fields, :columns, :custom_actions, :buttons, :show_attributes, :enabled_actions, :menu, :index_scopes
+    attr_reader :fields, :columns, :custom_actions, :buttons, :asides, :show_attributes, :enabled_actions, :menu,
+                :index_scopes
 
     def initialize
       @fields = []
@@ -110,6 +114,7 @@ module Administratum
       @filters = nil
       @custom_actions = {}
       @buttons = []
+      @asides = []
       @show_attributes = []
       @index_scopes = []
       @enabled_actions = BUILT_IN_ACTIONS.dup
@@ -124,6 +129,7 @@ module Administratum
       @filters = source.declared_filters && rebind(source.declared_filters)
       @custom_actions = source.custom_actions.dup
       @buttons = source.buttons.map(&:dup)
+      @asides = source.asides.map { |aside| aside.dup.tap { |copy| copy.buttons = aside.buttons.map(&:dup) } }
       @show_attributes = rebind(source.show_attributes)
       @index_scopes = source.index_scopes.dup
       @enabled_actions = source.enabled_actions.dup
@@ -240,14 +246,29 @@ module Administratum
       enabled_actions.include?(name.to_sym)
     end
 
-    def add_button(name, on:, label: nil, action: nil, to: nil, method: nil, confirm: nil, condition: nil, style: :secondary,
-                   panel: nil, upload: false)
-      buttons << Button.new(name: name.to_sym, label:, pages: Array(on).map(&:to_sym), action: (action || name).to_sym, to:,
-                            http_method: method&.to_sym, confirm:, condition:, style: style.to_sym, panel:, upload:)
+    def add_button(name, on:, **)
+      buttons << build_button(name, on:, **)
+    end
+
+    def build_button(name, on:, label: nil, action: nil, to: nil, method: nil, confirm: nil, condition: nil,
+                     style: :secondary, panel: nil, upload: false)
+      Button.new(name: name.to_sym, label:, pages: Array(on).map(&:to_sym), action: (action || name).to_sym, to:,
+                 http_method: method&.to_sym, confirm:, condition:, style: style.to_sym, panel:, upload:)
     end
 
     def buttons_for(page)
       buttons.select { |button| button.pages.include?(page.to_sym) }
+    end
+
+    def add_aside(on:, title: nil)
+      pages = Array(on).map(&:to_sym)
+      raise Administratum::Error, "An aside can't go on :row" if pages.include?(:row)
+
+      Aside.new(pages:, title:, buttons: []).tap { |aside| asides << aside }
+    end
+
+    def asides_for(page)
+      asides.select { |aside| aside.pages.include?(page.to_sym) }
     end
 
     def add_index_scope(name, label: nil, default: false, count: true, &block)
