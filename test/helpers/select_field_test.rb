@@ -28,6 +28,18 @@ class SelectFieldTest < ActionView::TestCase
     assert_not data.key?(:adm_combobox_min)
   end
 
+  test "ad-hoc select with as: renders its collection" do
+    html = form_with(model: posts(:hello), url: "/posts") do |form|
+      render_field(form, :title, as: :select, label: "Pick one", collection: [%w[Alpha a], %w[Beta b]],
+                                 placeholder: "Choose…")
+    end
+    fragment = Nokogiri::HTML.fragment(html)
+    select = fragment.at("select")
+    assert_equal "post[title]", select["name"]
+    assert_equal %w[a b], select.css("option").map { |option| option["value"] }.compact_blank
+    assert_includes fragment.text, "Pick one"
+  end
+
   private
 
   def render_select(**options)

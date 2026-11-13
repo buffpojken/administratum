@@ -136,7 +136,7 @@ module Administratum
       return declared.dup.tap { |copy| copy.options = copy.options.merge(options) } if declared && as.nil?
 
       type = (as || Administratum.field_types.infer(form.object.class, field)).to_sym
-      Administratum::Definition::Field.new(name: field.to_sym, type:, options:)
+      Administratum::Definition::Field.new(name: field.to_sym, declared_type: type, options:)
     end
 
     def association_collection(field, record)
